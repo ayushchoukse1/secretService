@@ -1,110 +1,56 @@
 package com.user.secrets.dao;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.List;
 
 public class Account {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long Id;
-	
-	private String firstName;
-	private String lastName;
-	private String password;
-	private String email;
+	private User user;
+	private List<Secret> secrets;
 
+	/**
+	 * 
+	 */
 	public Account() {
 	}
 
 	/**
-	 * @param firstName
-	 * @param lastName
-	 * @param password
-	 * @param email
+	 * @param user
+	 * @param secrets
 	 */
-	public Account(String firstName, String lastName, String password, String email) {
+	public Account(User user, List<Secret> secrets) {
 		super();
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.password = password;
-		this.email = email;
+		this.user = user;
+		this.secrets = secrets;
 	}
 
 	/**
-	 * @return the id
+	 * @return the user
 	 */
-	public Long getId() {
-		return Id;
+	public User getUser() {
+		return user;
 	}
 
 	/**
-	 * @param id
-	 *            the id to set
+	 * @param user
+	 *            the user to set
 	 */
-	public void setId(Long id) {
-		Id = id;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	/**
-	 * @return the firstName
+	 * @return the secrets
 	 */
-	public String getFirstName() {
-		return firstName;
+	public List<Secret> getSecrets() {
+		return secrets;
 	}
 
 	/**
-	 * @param firstName
-	 *            the firstName to set
+	 * @param secrets
+	 *            the secrets to set
 	 */
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	/**
-	 * @return the lastName
-	 */
-	public String getLastName() {
-		return lastName;
-	}
-
-	/**
-	 * @param lastName
-	 *            the lastName to set
-	 */
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	/**
-	 * @return the password
-	 */
-	public String getPassword() {
-		return password;
-	}
-
-	/**
-	 * @param password
-	 *            the password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	/**
-	 * @return the email
-	 */
-	public String getEmail() {
-		return email;
-	}
-
-	/**
-	 * @param email
-	 *            the email to set
-	 */
-	public void setEmail(String email) {
-		this.email = email;
+	public void setSecrets(List<Secret> secrets) {
+		this.secrets = secrets;
 	}
 
 }
