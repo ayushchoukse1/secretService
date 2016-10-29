@@ -2,24 +2,35 @@ package com.user.secrets.dao;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+@Entity
+@Table(name = "user")
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long Id;
+	private Long id;
 
+	@Column(nullable = false)
 	private String firstName;
 	private String lastName;
+	@Column(nullable = false)
 	private String password;
+	@Column(nullable = false)
 	private String email;
 
-	@ManyToOne
-	private List<Secret> secrets;
+	@ManyToOne(targetEntity = Secret.class, cascade = CascadeType.ALL)
+	private List<Secret> secret;
 
 	public User() {
 	}
@@ -41,7 +52,7 @@ public class User {
 	 * @return the id
 	 */
 	public Long getId() {
-		return Id;
+		return id;
 	}
 
 	/**
@@ -49,7 +60,7 @@ public class User {
 	 *            the id to set
 	 */
 	public void setId(Long id) {
-		Id = id;
+		id = id;
 	}
 
 	/**
@@ -113,17 +124,18 @@ public class User {
 	}
 
 	/**
-	 * @return the secrets
+	 * @return the secret
 	 */
-	public List<Secret> getSecrets() {
-		return secrets;
+	public List<Secret> getSecret() {
+		return secret;
 	}
 
 	/**
-	 * @param secrets
-	 *            the secrets to set
+	 * @param secret the secret to set
 	 */
-	public void setSecrets(List<Secret> secrets) {
-		this.secrets = secrets;
+	public void setSecret(List<Secret> secret) {
+		this.secret = secret;
 	}
+
+	
 }
