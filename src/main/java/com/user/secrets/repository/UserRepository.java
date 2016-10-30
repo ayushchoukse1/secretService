@@ -7,7 +7,8 @@ import org.springframework.data.repository.CrudRepository;
 import com.user.secrets.dao.Secret;
 import com.user.secrets.dao.User;
 
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends CrudRepository<User, Long>{
+	
 
 	User findByFirstName(String firstName);
 
@@ -18,5 +19,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
 	User findByEmail(String email);
 	
 	List<User> findAll();
+	
 	
 }

@@ -17,7 +17,7 @@ public interface SecretRepository extends CrudRepository<Secret, Long> {
 
 	List<Secret> findAllOrderByUpdatedOn(Date updatedOn);
 	
-	List<Secret> findAllByUser(User user);
+	//List<Secret> findAllByUser(User user);
 	
 	Secret findByTitle(String title);
 	

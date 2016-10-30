@@ -2,16 +2,13 @@ package com.user.secrets.dao;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Table(name = "user")
@@ -29,7 +26,7 @@ public class User {
 	@Column(nullable = false)
 	private String email;
 
-	@ManyToOne(targetEntity = Secret.class, cascade = CascadeType.ALL)
+	@OneToMany
 	private List<Secret> secret;
 
 	public User() {
@@ -60,7 +57,7 @@ public class User {
 	 *            the id to set
 	 */
 	public void setId(Long id) {
-		id = id;
+		this.id = id;
 	}
 
 	/**

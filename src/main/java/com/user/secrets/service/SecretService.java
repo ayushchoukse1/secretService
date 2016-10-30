@@ -16,5 +16,5 @@ public interface SecretService {
 
 	List<Secret> findByUpdateOn(Date updatedOn);
 
-	List<Secret> findAllByUser(User user);
+	//List<Secret> findAllByUser(User user);
 }

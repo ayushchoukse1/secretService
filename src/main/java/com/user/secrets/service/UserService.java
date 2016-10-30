@@ -8,6 +8,7 @@ import com.user.secrets.dao.User;
 
 @Service
 public interface UserService {
+	
 	User findById(Long id);
 
 	List<User> findAll();

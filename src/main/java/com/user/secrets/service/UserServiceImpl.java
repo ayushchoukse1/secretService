@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.user.secrets.dao.Secret;
 import com.user.secrets.dao.User;
+import com.user.secrets.repository.CustomUserRepository;
 import com.user.secrets.repository.UserRepository;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService,CustomUserRepository {
 	UserRepository userRepository;
 
 	@Autowired
@@ -60,6 +62,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void delete(Long id) {
 		userRepository.delete(id);
+	}
+
+	@Override
+	public List<Secret> findAllSecrets(User user) {
+		return user.getSecret();
 	}
 	
 }

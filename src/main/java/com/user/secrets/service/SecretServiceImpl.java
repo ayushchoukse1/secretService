@@ -4,12 +4,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.user.secrets.dao.Secret;
 import com.user.secrets.dao.User;
 import com.user.secrets.repository.SecretRepository;
 import com.user.secrets.repository.UserRepository;
 
+@Service
 public class SecretServiceImpl implements SecretService {
 
 	SecretRepository secretRepository;
@@ -41,9 +43,9 @@ public class SecretServiceImpl implements SecretService {
 		return secretRepository.findAllOrderByCreatedOn(updatedOn);
 	}
 
-	@Override
+	/*@Override
 	public List<Secret> findAllByUser(User user) {
 		return secretRepository.findAllByUser(userRepository.findOne(user.getId()));
 	}
-
+*/
 }
