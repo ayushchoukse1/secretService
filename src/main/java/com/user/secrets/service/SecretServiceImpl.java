@@ -54,7 +54,7 @@ public class SecretServiceImpl implements SecretService {
 	}
 
 	@Override
-	public Secret update(Long id,Secret secret) {
+	public Secret update(Secret secret) {
 		secretRepository.save(secret);
 		return secret;
 	}

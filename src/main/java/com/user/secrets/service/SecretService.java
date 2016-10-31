@@ -21,5 +21,5 @@ public interface SecretService {
 	
 	void delete(Long id);
 	
-	Secret update(Long id,Secret secret);
+	Secret update(Secret secret);
 }
