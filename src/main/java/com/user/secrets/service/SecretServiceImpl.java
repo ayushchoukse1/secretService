@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.user.secrets.dao.Secret;
-import com.user.secrets.dao.User;
 import com.user.secrets.repository.SecretRepository;
 import com.user.secrets.repository.UserRepository;
 
@@ -43,9 +42,25 @@ public class SecretServiceImpl implements SecretService {
 		return secretRepository.findAllOrderByCreatedOn(updatedOn);
 	}
 
-	/*@Override
-	public List<Secret> findAllByUser(User user) {
-		return secretRepository.findAllByUser(userRepository.findOne(user.getId()));
+	@Override
+	public Secret save(Secret secret) {
+		secretRepository.save(secret);
+		return secret;
 	}
-*/
+
+	@Override
+	public void delete(Long id) {
+		secretRepository.delete(id);
+	}
+
+	@Override
+	public Secret update(Long id,Secret secret) {
+		secretRepository.save(secret);
+		return secret;
+	}
+
+	/*
+	 * @Override public List<Secret> findAllByUser(User user) { return
+	 * secretRepository.findAllByUser(userRepository.findOne(user.getId())); }
+	 */
 }
