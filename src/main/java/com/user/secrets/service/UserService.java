@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.user.secrets.dao.Secret;
 import com.user.secrets.dao.User;
 
 @Service
@@ -26,4 +27,8 @@ public interface UserService {
 	void delete(User user);
 
 	void delete(Long id);
+
+	User update(User user);
+	
+	List<Secret> findAllSecrets(User user);
 }

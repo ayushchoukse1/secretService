@@ -7,16 +7,18 @@ import org.springframework.stereotype.Service;
 
 import com.user.secrets.dao.Secret;
 import com.user.secrets.dao.User;
-import com.user.secrets.repository.CustomUserRepository;
+import com.user.secrets.repository.SecretRepository;
 import com.user.secrets.repository.UserRepository;
 
 @Service
-public class UserServiceImpl implements UserService,CustomUserRepository {
+public class UserServiceImpl implements UserService {
 	UserRepository userRepository;
+	SecretRepository secretRepository;
 
 	@Autowired
-	public UserServiceImpl(UserRepository userRepository) {
+	public UserServiceImpl(UserRepository userRepository, SecretRepository secretRepository) {
 		this.userRepository = userRepository;
+		this.secretRepository = secretRepository;
 	}
 
 	@Override
@@ -66,7 +68,20 @@ public class UserServiceImpl implements UserService,CustomUserRepository {
 
 	@Override
 	public List<Secret> findAllSecrets(User user) {
-		return user.getSecret();
+		return secretRepository.findAllByUser(user);
 	}
-	
+
+	@Override
+	public User update(User user) {
+		User userUpdate = userRepository.findOne(user.getId());
+		userUpdate.setFirstname(user.getFirstname());
+		userUpdate.setEmail(user.getEmail());
+		userUpdate.setEnabled(user.getEnabled());
+		userUpdate.setAuthorities(user.getAuthorities());
+		userUpdate.setLastname(user.getLastname());
+		userUpdate.setLastPasswordResetDate(user.getLastPasswordResetDate());
+		userUpdate.setUsername(user.getUsername());
+		return userRepository.save(userUpdate);
+	}
+
 }

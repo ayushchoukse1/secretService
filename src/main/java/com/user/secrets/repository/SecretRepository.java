@@ -22,5 +22,6 @@ public interface SecretRepository extends CrudRepository<Secret, Long> {
 	Secret findByTitle(String title);
 	
 	Secret findByTitleLike(String title);
-
+	
+	List<Secret> findAllByUser(User user);
 }
