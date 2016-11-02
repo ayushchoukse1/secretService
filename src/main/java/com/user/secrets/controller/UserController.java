@@ -39,7 +39,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity getUser(@PathVariable(value = "id") Long id) {
+	public ResponseEntity getUser(@PathVariable(value = "id") Long id) {
 		if (userServiceImpl.findById(id) == null) {
 			return response.notFound("user not found: " + id);
 		}
@@ -47,9 +47,10 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity save(@RequestBody User user) {
-		if (userServiceImpl.findById(user.getId()) != null)
-			return response.conflict("user already exists: " + user.getId());
+	public ResponseEntity save(@RequestBody User user) {
+		System.out.println("user: "+ user.toString());
+		if (userServiceImpl.findByUserName(user.getUsername()) != null)
+			return response.conflict("user already exists: " + user.getUsername());
 		userServiceImpl.save(user);
 		return response.created(user);
 	}

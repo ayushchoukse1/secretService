@@ -2,7 +2,6 @@ package com.user.secrets.controller;
 
 import java.util.List;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.user.secrets.dao.Secret;
 import com.user.secrets.dao.User;
 import com.user.secrets.response.SecretHTTPResponse;
+import com.user.secrets.security.JwtUser;
 import com.user.secrets.service.SecretServiceImpl;
 import com.user.secrets.service.UserServiceImpl;
 
@@ -37,11 +37,10 @@ public class SecretController {
 
 	@RequestMapping(value = "/secrets", method = RequestMethod.GET)
 	public List<Secret> getSecretList() {
-		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User user = userServiceImpl.findByUserName(getCurrentUser().getUsername());
 		return userServiceImpl.findAllSecrets(userServiceImpl.findById(user.getId()));
 	}
-	
-		
+
 	@PreAuthorize("hasPermission(authentication, #secretId)")
 	@RequestMapping(value = "/secret/{secretId}", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Secret> getSecret(@PathVariable(value = "secretId") Long secretId) {
@@ -56,7 +55,8 @@ public class SecretController {
 	public @ResponseBody ResponseEntity<Secret> saveSecret(@RequestBody Secret secret) {
 		if (secretServiceImpl.findById(secret.getId()) != null)
 			return response.conflict("secret already exist: " + secret.getId());
-
+		JwtUser temp = (JwtUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		secret.setUser(userServiceImpl.findByUserName(temp.getUsername()));
 		secretServiceImpl.save(secret);
 		return response.created(secret);
 	}
@@ -69,11 +69,14 @@ public class SecretController {
 		secretServiceImpl.delete(id);
 		return response.ok("user deleted: " + id);
 	}
-
+	
+	@PreAuthorize("hasPermission(authentication, #id)")
 	@RequestMapping(value = "/secret/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Secret> updateSecret(@PathVariable(value = "id") Long id, @RequestBody Secret secret) {
 		if (ValidateSecret(id) == null)
 			return response.notFound("secret not found: " + id);
+		JwtUser temp = (JwtUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		secret.setUser(userServiceImpl.findByUserName(temp.getUsername()));
 		secretServiceImpl.update(secret);
 		return response.ok(secret);
 
@@ -83,4 +86,17 @@ public class SecretController {
 		return secretServiceImpl.findById(id);
 	}
 
+	private JwtUser getCurrentUser() {
+		/*System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().getClass());
+		JwtUser user= (JwtUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User newUser = new User();
+		newUser.setId(user.getId());
+		newUser.setEmail(user.getEmail());
+		newUser.setEnabled(user.isEnabled());
+		newUser.setFirstname(user.getFirstname());
+		newUser.setLastname(user.getLastname());
+		newUser.setLastPasswordResetDate(user.getLastPasswordResetDate());
+		newUser.set*/
+		return (JwtUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	}
 }

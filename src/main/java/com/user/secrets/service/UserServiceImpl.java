@@ -15,7 +15,7 @@ import com.user.secrets.repository.UserRepository;
 public class UserServiceImpl implements UserService {
 	UserRepository userRepository;
 	SecretRepository secretRepository;
-	
+
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, SecretRepository secretRepository) {
 		this.userRepository = userRepository;
@@ -83,5 +83,11 @@ public class UserServiceImpl implements UserService {
 		userUpdate.setLastPasswordResetDate(user.getLastPasswordResetDate());
 		userUpdate.setUsername(user.getUsername());
 		return userRepository.save(userUpdate);
+	}
+
+	@Override
+	public User findByUserName(String username) {
+
+		return userRepository.findByUsername(username);
 	}
 }

@@ -31,4 +31,5 @@ public interface UserService {
 	User update(User user);
 	
 	List<Secret> findAllSecrets(User user);
+	User findByUserName(String username);
 }

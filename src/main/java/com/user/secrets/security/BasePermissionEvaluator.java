@@ -29,14 +29,9 @@ public class BasePermissionEvaluator implements PermissionEvaluator {
 
 	@Override
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-		System.out.println(" user from authentication " + authentication.getName());
+
 		JwtUser user = (JwtUser) authentication.getPrincipal();
-		// System.out.println("secretId= "+targetDomainObject.toString());
-		System.out.println(" permission secretId= " + permission.toString());
-		System.out.println(secretRepository);
-		System.out.println(" user from id " + secretRepository.findOne((Long) permission).getUser().getUsername());
 		String username = secretRepository.findOne((Long) permission).getUser().getUsername();
-		System.out.println(user.getUsername() + " == " + username);
 		if (user.getUsername().equals(username)) {
 			return true;
 		} else {
