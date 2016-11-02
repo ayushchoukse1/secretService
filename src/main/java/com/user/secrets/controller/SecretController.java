@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,13 +40,15 @@ public class SecretController {
 		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		return userServiceImpl.findAllSecrets(userServiceImpl.findById(user.getId()));
 	}
-
-	@RequestMapping(value = "/secret/{id}", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Secret> getSecret(@PathVariable(value = "id") Long id) {
-		if (ValidateSecret(id) == null) {
-			return response.notFound("secret not found: " + id);
+	
+		
+	@PreAuthorize("hasPermission(authentication, #secretId)")
+	@RequestMapping(value = "/secret/{secretId}", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Secret> getSecret(@PathVariable(value = "secretId") Long secretId) {
+		if (ValidateSecret(secretId) == null) {
+			return response.notFound("secret not found: " + secretId);
 		} else {
-			return response.ok(secretServiceImpl.findById(id));
+			return response.ok(secretServiceImpl.findById(secretId));
 		}
 	}
 

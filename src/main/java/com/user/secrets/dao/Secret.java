@@ -19,20 +19,21 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
-@Table(name = "secret")
+@Table(name = "SECRET")
 public class Secret {
 
 	@Id
+	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(name = "TITLE", nullable = false)
 	private String title;
 
 	private String body;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = false, updatable = false)
+	@Column( nullable = false, updatable = false)
 	@CreationTimestamp
 	private Date createdOn;
 
@@ -155,6 +156,12 @@ public class Secret {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Secret [id=" + id + ", title=" + title + ", body=" + body + ", createdOn=" + createdOn + ", updatedOn="
+				+ updatedOn + ", user=" + user + "]";
+	}
+
 	
 }
