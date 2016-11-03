@@ -1,5 +1,6 @@
 package com.user.secrets.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +56,15 @@ public class SecretController {
 	public @ResponseBody ResponseEntity<Secret> saveSecret(@RequestBody Secret secret) {
 		if (secretServiceImpl.findById(secret.getId()) != null)
 			return response.conflict("secret already exist: " + secret.getId());
-		JwtUser temp = (JwtUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		JwtUser temp = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		secret.setUser(userServiceImpl.findByUserName(temp.getUsername()));
+		secret.setCreatedOn(new Date());
+		secret.setUpdatedOn(new Date());
 		secretServiceImpl.save(secret);
 		return response.created(secret);
 	}
 
+	@PreAuthorize("hasPermission(authentication, #id)")
 	@RequestMapping(value = "/secret/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Secret> deleteSecret(@PathVariable(value = "id") Long id) {
 		if (ValidateSecret(id) == null)
@@ -69,17 +73,17 @@ public class SecretController {
 		secretServiceImpl.delete(id);
 		return response.ok("user deleted: " + id);
 	}
-	
+
 	@PreAuthorize("hasPermission(authentication, #id)")
 	@RequestMapping(value = "/secret/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Secret> updateSecret(@PathVariable(value = "id") Long id, @RequestBody Secret secret) {
 		if (ValidateSecret(id) == null)
 			return response.notFound("secret not found: " + id);
-		JwtUser temp = (JwtUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		JwtUser temp = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		secret.setUser(userServiceImpl.findByUserName(temp.getUsername()));
+		secret.setUpdatedOn(new Date());
 		secretServiceImpl.update(secret);
 		return response.ok(secret);
-
 	}
 
 	public Secret ValidateSecret(Long id) {
@@ -87,16 +91,18 @@ public class SecretController {
 	}
 
 	private JwtUser getCurrentUser() {
-		/*System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().getClass());
-		JwtUser user= (JwtUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		User newUser = new User();
-		newUser.setId(user.getId());
-		newUser.setEmail(user.getEmail());
-		newUser.setEnabled(user.isEnabled());
-		newUser.setFirstname(user.getFirstname());
-		newUser.setLastname(user.getLastname());
-		newUser.setLastPasswordResetDate(user.getLastPasswordResetDate());
-		newUser.set*/
-		return (JwtUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		/*
+		 * System.out.println(SecurityContextHolder.getContext().
+		 * getAuthentication().getPrincipal().getClass()); JwtUser user=
+		 * (JwtUser)SecurityContextHolder.getContext().getAuthentication().
+		 * getPrincipal(); User newUser = new User();
+		 * newUser.setId(user.getId()); newUser.setEmail(user.getEmail());
+		 * newUser.setEnabled(user.isEnabled());
+		 * newUser.setFirstname(user.getFirstname());
+		 * newUser.setLastname(user.getLastname());
+		 * newUser.setLastPasswordResetDate(user.getLastPasswordResetDate());
+		 * newUser.set
+		 */
+		return (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 }
