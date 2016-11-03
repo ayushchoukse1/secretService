@@ -13,7 +13,7 @@ import com.user.secrets.repository.SecretRepository;
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
 	SecretRepository secretRepository;
-	
+
 	public MethodSecurityConfig() {
 		// TODO Auto-generated constructor stub
 	}

@@ -61,10 +61,4 @@ public class SecretServiceImpl implements SecretService {
 		return secret;
 	}
 
-	/*
-	 * @Override public List<Secret> findAllByUser(User user) { return
-	 * secretRepository.findAllByUser(userRepository.findOne(user.getId())); }
-	 */
-	
-	
 }

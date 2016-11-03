@@ -10,94 +10,87 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class JwtUser implements UserDetails {
 
-    private final Long id;
-    private final String username;
-    private final String firstname;
-    private final String lastname;
-    private final String password;
-    private final String email;
-    private final Collection<? extends GrantedAuthority> authorities;
-    private final boolean enabled;
-    private final Date lastPasswordResetDate;
-    public JwtUser(
-          Long id,
-          String username,
-          String firstname,
-          String lastname,
-          String email,
-          String password, Collection<? extends GrantedAuthority> authorities,
-          boolean enabled,
-          Date lastPasswordResetDate
-    ) {
-        this.id = id;
-        this.username = username;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.password = password;
-        this.authorities = authorities;
-        this.enabled = enabled;
-        this.lastPasswordResetDate = lastPasswordResetDate;
-    }
+	private final Long id;
+	private final String username;
+	private final String firstname;
+	private final String lastname;
+	private final String password;
+	private final String email;
+	private final Collection<? extends GrantedAuthority> authorities;
+	private final boolean enabled;
+	private final Date lastPasswordResetDate;
 
-    @JsonIgnore
-    public Long getId() {
-        return id;
-    }
+	public JwtUser(Long id, String username, String firstname, String lastname, String email, String password,
+			Collection<? extends GrantedAuthority> authorities, boolean enabled, Date lastPasswordResetDate) {
+		this.id = id;
+		this.username = username;
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.email = email;
+		this.password = password;
+		this.authorities = authorities;
+		this.enabled = enabled;
+		this.lastPasswordResetDate = lastPasswordResetDate;
+	}
 
-    @Override
-    public String getUsername() {
-        return username;
-    }
+	@JsonIgnore
+	public Long getId() {
+		return id;
+	}
 
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+	@Override
+	public String getUsername() {
+		return username;
+	}
 
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+	@JsonIgnore
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
 
-    @JsonIgnore
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+	@JsonIgnore
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
 
-    public String getFirstname() {
-        return firstname;
-    }
+	@JsonIgnore
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
 
-    public String getLastname() {
-        return lastname;
-    }
+	public String getFirstname() {
+		return firstname;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getLastname() {
+		return lastname;
+	}
 
-    @JsonIgnore
-    @Override
-    public String getPassword() {
-        return password;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
+	@JsonIgnore
+	@Override
+	public String getPassword() {
+		return password;
+	}
 
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return authorities;
+	}
 
-    @JsonIgnore
-    public Date getLastPasswordResetDate() {
-        return lastPasswordResetDate;
-    }
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	@JsonIgnore
+	public Date getLastPasswordResetDate() {
+		return lastPasswordResetDate;
+	}
 }

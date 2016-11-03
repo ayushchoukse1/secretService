@@ -18,13 +18,12 @@ public class BasePermissionEvaluator implements PermissionEvaluator {
 
 	public BasePermissionEvaluator() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Autowired
 	public BasePermissionEvaluator(SecretRepository secretRepository) {
 		this.secretRepository = secretRepository;
-		// TODO Auto-generated constructor stub
+	
 	}
 
 	@Override
