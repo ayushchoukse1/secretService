@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -40,20 +41,30 @@ public class AuthenticationRestController {
 
     @RequestMapping(value = "${jwt.route.authentication.path}", method = RequestMethod.POST) //  path = /oauth/token 
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
-
+    	System.out.println(authenticationRequest.getUsername() +" =>" +authenticationRequest.getPassword());
         // Perform the security
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getUsername(),
-                        authenticationRequest.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
+    	final Authentication authentication;
+        try {
+       authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationRequest.getUsername(),
+                            authenticationRequest.getPassword()
+                    )
+            );
+       System.out.println(authentication.getName());
+       System.out.println(authentication.getAuthorities());
+       System.out.println(authentication.getCredentials());
+       SecurityContextHolder.getContext().setAuthentication(authentication);
+		} catch (BadCredentialsException e) {
+			e.printStackTrace();
+		}
+      
+        System.out.println("after");
         // Reload password post-security so we can generate token
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails, device);
-        System.out.println(userDetails+" = "+token);
+        System.out.println("/oauth/: "+userDetails+" = "+token);
+        System.out.println("token: "+token);
         // Return the token
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }

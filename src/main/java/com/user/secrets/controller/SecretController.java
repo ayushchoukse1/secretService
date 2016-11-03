@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.user.secrets.dao.Secret;
-import com.user.secrets.dao.User;
+import com.user.secrets.domain.Secret;
+import com.user.secrets.domain.User;
 import com.user.secrets.response.SecretHTTPResponse;
 import com.user.secrets.security.JwtUser;
 import com.user.secrets.service.SecretServiceImpl;

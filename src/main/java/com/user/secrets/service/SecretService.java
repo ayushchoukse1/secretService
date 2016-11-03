@@ -3,8 +3,8 @@ package com.user.secrets.service;
 import java.util.Date;
 import java.util.List;
 
-import com.user.secrets.dao.Secret;
-import com.user.secrets.dao.User;
+import com.user.secrets.domain.Secret;
+import com.user.secrets.domain.User;
 
 public interface SecretService {
 

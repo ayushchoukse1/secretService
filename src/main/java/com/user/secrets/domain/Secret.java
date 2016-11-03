@@ -1,17 +1,14 @@
-package com.user.secrets.dao;
+package com.user.secrets.domain;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -19,8 +16,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(name = "SECRET")
 public class Secret {
 
 	@Id
@@ -42,8 +40,9 @@ public class Secret {
 	@UpdateTimestamp
 	private Date updatedOn;
 
-	@ManyToOne()
-	@JoinColumn(name="user_id")
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	@JsonIgnore
 	private User user;
 
 	/**

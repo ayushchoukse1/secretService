@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import com.user.secrets.dao.Secret;
-import com.user.secrets.dao.User;
+import com.user.secrets.domain.Secret;
+import com.user.secrets.domain.User;
 import com.user.secrets.repository.SecretRepository;
 import com.user.secrets.repository.UserRepository;
 

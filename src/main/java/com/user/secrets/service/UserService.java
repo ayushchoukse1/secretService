@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.user.secrets.dao.Secret;
-import com.user.secrets.dao.User;
+import com.user.secrets.domain.Secret;
+import com.user.secrets.domain.User;
 
 @Service
 public interface UserService {

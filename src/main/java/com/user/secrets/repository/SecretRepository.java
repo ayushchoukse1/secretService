@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.user.secrets.dao.Secret;
-import com.user.secrets.dao.User;
+import com.user.secrets.domain.Secret;
+import com.user.secrets.domain.User;
 
 public interface SecretRepository extends CrudRepository<Secret, Long> {
 	Secret findById(Long id);

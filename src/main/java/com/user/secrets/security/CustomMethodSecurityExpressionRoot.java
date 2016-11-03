@@ -5,7 +5,7 @@ import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 
-import com.user.secrets.dao.User;
+import com.user.secrets.domain.User;
 import com.user.secrets.repository.SecretRepository;
 
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot

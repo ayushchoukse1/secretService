@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 
-import com.user.secrets.dao.User;
+import com.user.secrets.domain.User;
 import com.user.secrets.repository.SecretRepository;
 import com.user.secrets.repository.UserRepository;
 
@@ -45,7 +45,7 @@ public class BasePermissionEvaluator implements PermissionEvaluator {
 		throw new RuntimeException("Id and Class permissions are not supperted by this application");
 	}
 
-	/*public boolean hasAccess(Authentication authentication, Long id) {
+	public boolean hasAccess(Authentication authentication, Long id) {
 		System.out.println("has access: " + authentication.getName());
 		JwtUser user = (JwtUser) authentication.getPrincipal();
 		System.out.println(" id =  " + id);
@@ -55,6 +55,6 @@ public class BasePermissionEvaluator implements PermissionEvaluator {
 		} else {
 			return false;
 		}
-	}*/
+	}
 
 }

@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.user.secrets.dao.User;
+import com.user.secrets.domain.User;
 import com.user.secrets.repository.UserRepository;
 import com.user.secrets.security.JwtUserFactory;
 

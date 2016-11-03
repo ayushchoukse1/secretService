@@ -1,4 +1,4 @@
-package com.user.secrets.dao;
+package com.user.secrets.domain;
 
 import java.util.Date;
 import java.util.List;
@@ -10,10 +10,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -21,12 +21,12 @@ import javax.validation.constraints.Size;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(name = "USER")
 public class User {
 
 	@Id
-	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
@@ -64,12 +64,14 @@ public class User {
 	@NotNull
 	private Date lastPasswordResetDate;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "USER_AUTHORITY")
+	@ManyToMany(targetEntity = Authority.class, cascade = CascadeType.ALL,fetch=FetchType.EAGER)
+	@JoinTable(name = "user_authority", joinColumns = {
+			@JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = {
+					@JoinColumn(name = "authority_id", referencedColumnName = "id") })
+	@JsonIgnore
 	private List<Authority> authorities;
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "SECRETS")
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Secret> secrets;
 
 	public User() {
@@ -146,7 +148,8 @@ public class User {
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
-
+	
+	
 	public List<Authority> getAuthorities() {
 		return authorities;
 	}
@@ -175,7 +178,7 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
 				+ ", lastName=" + lastName + ", email=" + email + ", enabled=" + enabled + ", lastPasswordResetDate="
-				+ lastPasswordResetDate + ", authorities=" + authorities + "]";
+				+ lastPasswordResetDate + ", authorities=" + "]";
 	}
 
 }

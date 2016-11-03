@@ -1,18 +1,20 @@
 package com.user.secrets.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.user.secrets.dao.User;
+import com.user.secrets.domain.Authority;
+import com.user.secrets.domain.Secret;
+import com.user.secrets.domain.User;
+import com.user.secrets.repository.AuthorityRepository;
 import com.user.secrets.response.UserHTTPResponse;
 import com.user.secrets.service.UserServiceImpl;
 
@@ -21,11 +23,17 @@ public class UserController {
 
 	UserServiceImpl userServiceImpl;
 	UserHTTPResponse response;
+	AuthorityRepository authority;
+	// Authority authAdmin,authUser;
 
 	@Autowired
-	public UserController(UserServiceImpl userServiceImpl, UserHTTPResponse response) {
+	public UserController(UserServiceImpl userServiceImpl, UserHTTPResponse response, AuthorityRepository authority) {
 		this.userServiceImpl = userServiceImpl;
 		this.response = response;
+		this.authority = authority;
+		// authAdmin = new Authority(1);
+		// authUser = new Authority(2);
+		// authority.save(authUser);
 	}
 
 	@RequestMapping("/")
@@ -38,6 +46,7 @@ public class UserController {
 		return "login";
 	}
 
+	// @PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
 	public ResponseEntity getUser(@PathVariable(value = "id") Long id) {
 		if (userServiceImpl.findById(id) == null) {
@@ -48,11 +57,25 @@ public class UserController {
 
 	@RequestMapping(value = "/user", method = RequestMethod.POST)
 	public ResponseEntity save(@RequestBody User user) {
-		System.out.println("user: "+ user.toString());
+		System.out.println("user: " + user.toString());
 		if (userServiceImpl.findByUserName(user.getUsername()) != null)
 			return response.conflict("user already exists: " + user.getUsername());
-		userServiceImpl.save(user);
-		return response.created(user);
+		// authority.save(authAdmin);
+		List<Authority> authList = new ArrayList<Authority>();
+		authList.add(authority.findById((long) 2));
+		User newUser = new User();
+		newUser.setAuthorities(authList);
+		newUser.setEnabled(true);
+		newUser.setSecrets(new ArrayList<Secret>());
+		newUser.setEmail(user.getEmail());
+		newUser.setFirstname(user.getFirstname());
+		newUser.setLastname(user.getLastname());
+		newUser.setPassword(user.getPassword());
+		newUser.setLastPasswordResetDate(user.getLastPasswordResetDate());
+		newUser.setUsername(user.getUsername());
+		userServiceImpl.save(newUser);
+
+		return response.created(newUser);
 	}
 
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
