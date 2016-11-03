@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -20,21 +23,20 @@ import com.user.secrets.response.UserHTTPResponse;
 import com.user.secrets.service.UserServiceImpl;
 
 @Controller
+@ExposesResourceFor(User.class)
 public class UserController {
 
 	UserServiceImpl userServiceImpl;
 	UserHTTPResponse response;
 	AuthorityRepository authority;
-	// Authority authAdmin,authUser;
-
+	EntityLinks entityLinks;
+	
 	@Autowired
-	public UserController(UserServiceImpl userServiceImpl, UserHTTPResponse response, AuthorityRepository authority) {
+	public UserController(UserServiceImpl userServiceImpl, UserHTTPResponse response, AuthorityRepository authority,EntityLinks entityLinks) {
 		this.userServiceImpl = userServiceImpl;
 		this.response = response;
 		this.authority = authority;
-		// authAdmin = new Authority(1);
-		// authUser = new Authority(2);
-		// authority.save(authUser);
+		this.entityLinks=entityLinks;
 	}
 
 	@RequestMapping("/")
@@ -53,7 +55,10 @@ public class UserController {
 		if (userServiceImpl.findById(id) == null) {
 			return response.notFound("user not found: " + id);
 		}
-		return response.ok(userServiceImpl.findById(id));
+		Resource<User> userResource = new Resource<User>(this.userServiceImpl.findById(id));
+		userResource.add(entityLinks.linkFor(User.class).slash(userServiceImpl.findById(id)).withSelfRel());
+		return response.ok(userResource);
+
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.POST)
@@ -86,7 +91,8 @@ public class UserController {
 		userServiceImpl.delete(id);
 		return response.ok("user deleted: " + id);
 	}
-
+	
+	@PreAuthorize("hasAccess(authentication, #id)")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<User> update(@PathVariable(value = "id") Long id, @RequestBody User user) {
 		if (ValidateUser(id) == null)

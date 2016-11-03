@@ -19,12 +19,13 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class User {
+public class User{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
