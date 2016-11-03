@@ -5,7 +5,6 @@ import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 
-import com.user.secrets.domain.User;
 import com.user.secrets.repository.SecretRepository;
 
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
@@ -13,23 +12,23 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 	private Object filterObject;
 	private Object returnObject;
 
-	@Autowired
-	SecretRepository secretRepository;
-
 	public CustomMethodSecurityExpressionRoot(Authentication authentication) {
 		super(authentication);
 	}
 
-	public boolean isAllowed(Long id) {
-		System.out.println("isAllowed: " + authentication.getName());
-		JwtUser user = (JwtUser) authentication.getPrincipal();
-		System.out.println(" id =  " + id);
-		String username = secretRepository.findById(id).getUser().getPassword();
-		if (user.getUsername() == username) {
+	/*
+	 * public boolean isAllowed(Long id) { System.out.println("isAllowed: " +
+	 * authentication.getName()); JwtUser user = (JwtUser)
+	 * authentication.getPrincipal(); System.out.println(" id =  " + id); String
+	 * username = secretRepository.findById(id).getUser().getPassword(); if
+	 * (user.getUsername() == username) { return true; } else { return false; }
+	 * }
+	 */
+	public boolean hasAccess(Authentication authentication, Long id) {
+		if ((((JwtUser) authentication.getPrincipal()).getId()) == id)
 			return true;
-		} else {
+		else
 			return false;
-		}
 	}
 
 	@Override

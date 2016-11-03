@@ -11,12 +11,7 @@ import com.user.secrets.repository.SecretRepository;
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
-
 	SecretRepository secretRepository;
-
-	public MethodSecurityConfig() {
-		// TODO Auto-generated constructor stub
-	}
 
 	@Autowired
 	public MethodSecurityConfig(SecretRepository secretRepository) {

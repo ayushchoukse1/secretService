@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,7 +47,7 @@ public class UserController {
 		return "login";
 	}
 
-	// @PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAccess(authentication, #id)")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
 	public ResponseEntity getUser(@PathVariable(value = "id") Long id) {
 		if (userServiceImpl.findById(id) == null) {
