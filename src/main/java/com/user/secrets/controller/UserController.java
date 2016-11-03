@@ -56,7 +56,7 @@ public class UserController {
 			return response.notFound("user not found: " + id);
 		}
 		Resource<User> userResource = new Resource<User>(this.userServiceImpl.findById(id));
-		userResource.add(entityLinks.linkFor(User.class).slash(userServiceImpl.findById(id)).withSelfRel());
+		userResource.add(entityLinks.linkFor(User.class).slash(id).withSelfRel());
 		return response.ok(userResource);
 
 	}
