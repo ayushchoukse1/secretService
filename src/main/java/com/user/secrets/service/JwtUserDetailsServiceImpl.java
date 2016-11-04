@@ -15,23 +15,19 @@ import com.user.secrets.security.JwtUserFactory;
 @Service
 public class JwtUserDetailsServiceImpl implements UserDetailsService {
 	private final Log logger = LogFactory.getLog(this.getClass());
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    	
-    	System.out.println("findByUserName: "+username);
-        
-    	User user = userRepository.findByUsername(username);
-        
-    	System.out.println("loadUserByUsername user is: "+user.toString());
-        
-    	if (user == null) {
-    		logger.error("user with username "+ username+ " doesn't exist.");
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-        } else {
-            return JwtUserFactory.create(user);
-        }
-    }
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+		User user = userRepository.findByUsername(username);
+
+		if (user == null) {
+			logger.error("user with username " + username + " doesn't exist.");
+			throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+		} else {
+			return JwtUserFactory.create(user);
+		}
+	}
 }

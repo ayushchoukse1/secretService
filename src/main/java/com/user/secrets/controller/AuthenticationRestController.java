@@ -9,15 +9,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,7 +47,10 @@ public class AuthenticationRestController {
 
 		String username = authenticationRequest.getUsername();
 		String password = authenticationRequest.getPassword();
-
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+		if (userDetails == null) {
+			ResponseEntity.ok("user does not exist: " + username);
+		}
 		logger.info("authenticating user '" + username + "' with the credentials provided.");
 
 		final Authentication authentication = authenticationManager
@@ -59,7 +58,6 @@ public class AuthenticationRestController {
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 		final String token = jwtTokenUtil.generateToken(userDetails, device);
 
 		// Return the token
@@ -76,7 +74,10 @@ public class AuthenticationRestController {
 		String username = jwtTokenUtil.getUsernameFromToken(token);
 
 		JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);
-
+		if (user == null) {
+			ResponseEntity.ok("user does not exist: " + username);
+		}
+		
 		if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate())) {
 
 			logger.info("creating refresh token for user '" + username + "'.");

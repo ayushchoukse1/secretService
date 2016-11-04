@@ -2,7 +2,6 @@ package com.user.secrets.security;
 
 import java.io.Serializable;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 
+import com.user.secrets.domain.Secret;
 import com.user.secrets.repository.SecretRepository;
 
 @Configuration
@@ -31,7 +31,12 @@ public class BasePermissionEvaluator implements PermissionEvaluator {
 	@Override
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
 		JwtUser user = (JwtUser) authentication.getPrincipal();
-		String username = secretRepository.findOne((Long) permission).getUser().getUsername();
+		Secret secret = secretRepository.findOne((Long) permission);
+		if (secret == null) {
+			return false;
+		}
+		String username = secret.getUser().getUsername();
+		
 		logger.info("checking authorization for "+user);
 		if (user.getUsername().equals(username)) {
 			return true;

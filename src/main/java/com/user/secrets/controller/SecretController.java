@@ -45,7 +45,7 @@ public class SecretController {
 	@PreAuthorize("hasPermission(authentication, #secretId)")
 	@RequestMapping(value = "/secret/{secretId}", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Secret> getSecret(@PathVariable(value = "secretId") Long secretId) {
-		if (ValidateSecret(secretId) == null) {
+		if (ValidateSecret(secretId).equals(null)) {
 			return response.notFound("secret not found: " + secretId);
 		} else {
 			return response.ok(secretServiceImpl.findById(secretId));

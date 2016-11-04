@@ -1,6 +1,7 @@
 package com.user.secrets.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +26,18 @@ import com.user.secrets.service.UserServiceImpl;
 @Controller
 @ExposesResourceFor(User.class)
 public class UserController {
-
 	UserServiceImpl userServiceImpl;
 	UserHTTPResponse response;
 	AuthorityRepository authority;
 	EntityLinks entityLinks;
-	
+
 	@Autowired
-	public UserController(UserServiceImpl userServiceImpl, UserHTTPResponse response, AuthorityRepository authority,EntityLinks entityLinks) {
+	public UserController(UserServiceImpl userServiceImpl, UserHTTPResponse response, AuthorityRepository authority,
+			EntityLinks entityLinks) {
 		this.userServiceImpl = userServiceImpl;
 		this.response = response;
 		this.authority = authority;
-		this.entityLinks=entityLinks;
+		this.entityLinks = entityLinks;
 	}
 
 	@RequestMapping("/")
@@ -63,10 +64,8 @@ public class UserController {
 
 	@RequestMapping(value = "/user", method = RequestMethod.POST)
 	public ResponseEntity save(@RequestBody User user) {
-		System.out.println("user: " + user.toString());
 		if (userServiceImpl.findByUserName(user.getUsername()) != null)
 			return response.conflict("user already exists: " + user.getUsername());
-		// authority.save(authAdmin);
 		List<Authority> authList = new ArrayList<Authority>();
 		authList.add(authority.findById((long) 2));
 		User newUser = new User();
@@ -77,7 +76,7 @@ public class UserController {
 		newUser.setFirstname(user.getFirstname());
 		newUser.setLastname(user.getLastname());
 		newUser.setPassword(user.getPassword());
-		newUser.setLastPasswordResetDate(user.getLastPasswordResetDate());
+		newUser.setLastPasswordResetDate(new Date());
 		newUser.setUsername(user.getUsername());
 		userServiceImpl.save(newUser);
 
@@ -91,7 +90,7 @@ public class UserController {
 		userServiceImpl.delete(id);
 		return response.ok("user deleted: " + id);
 	}
-	
+
 	@PreAuthorize("hasAccess(authentication, #id)")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<User> update(@PathVariable(value = "id") Long id, @RequestBody User user) {
