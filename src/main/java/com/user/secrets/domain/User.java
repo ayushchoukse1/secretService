@@ -19,13 +19,16 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class User{
+public class User {
+
+	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -65,7 +68,7 @@ public class User{
 	@NotNull
 	private Date lastPasswordResetDate;
 
-	@ManyToMany(targetEntity = Authority.class, cascade = CascadeType.ALL,fetch=FetchType.EAGER)
+	@ManyToMany(targetEntity = Authority.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_authority", joinColumns = {
 			@JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "authority_id", referencedColumnName = "id") })
@@ -115,7 +118,7 @@ public class User{
 	}
 
 	public void setPassword(String password) {
-		this.password = new BCryptPasswordEncoder().encode(password);
+		this.password = password;
 	}
 
 	public String getFirstname() {
@@ -149,8 +152,7 @@ public class User{
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
-	
-	
+
 	public List<Authority> getAuthorities() {
 		return authorities;
 	}

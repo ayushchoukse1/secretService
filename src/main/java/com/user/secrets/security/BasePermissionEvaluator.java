@@ -2,19 +2,20 @@ package com.user.secrets.security;
 
 import java.io.Serializable;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 
-import com.user.secrets.domain.User;
 import com.user.secrets.repository.SecretRepository;
-import com.user.secrets.repository.UserRepository;
 
 @Configuration
 public class BasePermissionEvaluator implements PermissionEvaluator {
 
 	SecretRepository secretRepository;
+	private final Log logger = LogFactory.getLog(this.getClass());
 
 	public BasePermissionEvaluator() {
 		super();
@@ -28,12 +29,13 @@ public class BasePermissionEvaluator implements PermissionEvaluator {
 
 	@Override
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-
 		JwtUser user = (JwtUser) authentication.getPrincipal();
 		String username = secretRepository.findOne((Long) permission).getUser().getUsername();
+		logger.info("checking authorization for "+user);
 		if (user.getUsername().equals(username)) {
 			return true;
 		} else {
+			logger.error("user "+user+" is not authorized to view this resource.");
 			return false;
 		}
 	}
@@ -44,7 +46,7 @@ public class BasePermissionEvaluator implements PermissionEvaluator {
 		throw new RuntimeException("Id and Class permissions are not supperted by this application");
 	}
 
-	public boolean hasAccess(Authentication authentication, Long id) {
+	/*public boolean hasAccess(Authentication authentication, Long id) {
 		System.out.println("has access: " + authentication.getName());
 		JwtUser user = (JwtUser) authentication.getPrincipal();
 		System.out.println(" id =  " + id);
@@ -54,6 +56,6 @@ public class BasePermissionEvaluator implements PermissionEvaluator {
 		} else {
 			return false;
 		}
-	}
+	}*/
 
 }

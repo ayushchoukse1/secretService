@@ -1,5 +1,7 @@
 package com.user.secrets.security;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
@@ -11,24 +13,21 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 		implements MethodSecurityExpressionOperations {
 	private Object filterObject;
 	private Object returnObject;
-
+	private final Log logger = LogFactory.getLog(this.getClass());
+	
 	public CustomMethodSecurityExpressionRoot(Authentication authentication) {
 		super(authentication);
 	}
 
-	/*
-	 * public boolean isAllowed(Long id) { System.out.println("isAllowed: " +
-	 * authentication.getName()); JwtUser user = (JwtUser)
-	 * authentication.getPrincipal(); System.out.println(" id =  " + id); String
-	 * username = secretRepository.findById(id).getUser().getPassword(); if
-	 * (user.getUsername() == username) { return true; } else { return false; }
-	 * }
-	 */
 	public boolean hasAccess(Authentication authentication, Long id) {
 		if ((((JwtUser) authentication.getPrincipal()).getId()) == id)
+			{logger.info((((JwtUser) authentication.getPrincipal()).getId())+" has access to resource "+id);
 			return true;
-		else
+			}
+		else {
+			logger.error((((JwtUser) authentication.getPrincipal()).getId())+" has no authorization to resource "+id);
 			return false;
+		}
 	}
 
 	@Override

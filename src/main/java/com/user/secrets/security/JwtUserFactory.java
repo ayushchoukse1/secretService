@@ -15,8 +15,15 @@ public final class JwtUserFactory {
 	}
 
 	public static JwtUser create(User user) {
-		return new JwtUser(user.getId(), user.getUsername(), user.getFirstname(), user.getLastname(), user.getEmail(),
-				user.getPassword(), mapToGrantedAuthorities(user.getAuthorities()), user.getEnabled(),
+		System.out.println("create JWT USER: "+user.toString());
+		return new JwtUser(user.getId(), 
+				user.getUsername(), 
+				user.getFirstname(), 
+				user.getLastname(), 
+				user.getEmail(),
+				user.getPassword(), 
+				mapToGrantedAuthorities(user.getAuthorities()), 
+				user.getEnabled(),
 				user.getLastPasswordResetDate());
 	}
 
