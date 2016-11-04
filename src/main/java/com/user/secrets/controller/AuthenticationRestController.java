@@ -78,11 +78,11 @@ public class AuthenticationRestController {
 			return new ResponseEntity<String>("no token provided.", HttpStatus.BAD_REQUEST);
 		}
 		String username = jwtTokenUtil.getUsernameFromToken(token);
-
-		JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);
-		if (user == null) {
+		if ( userDetailsService.loadUserByUsername(username) == null) {
 			return new ResponseEntity<String>("user with provided username does not exist", HttpStatus.NOT_FOUND);
 		}
+		JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);
+		
 		if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate())) {
 			logger.info("creating refresh token for user '" + username + "'.");
 			String refreshedToken = jwtTokenUtil.refreshToken(token);

@@ -66,36 +66,32 @@ public class AuthenticationRestControllerTest {
 			.build();
 	}
 
-	// @Test
-	// public void oAuthTokenRestPointUnauthorizedWithoutBody() throws Exception
-	// {
-	// // Getting access token without providing body.
-	// mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON))
-	// .andExpect(status().isBadRequest());
-	// }
-	//
-	// @Test
-	// public void oAuthTokenRestPointUnauthorizedWithoutUsernamePassword()
-	// throws Exception {
-	// // Getting access token without any username, and password.
-	// String req = new Gson().toJson(new JwtAuthenticationRequest("", ""));
-	// mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON)
-	// .content(req))
-	// .andExpect(status().isUnauthorized());
-	// }
-	//
-	// @Test
-	// public void oAuthTokenRestPointUnauthorizedWithoutRegistering() throws
-	// Exception {
-	// // Getting access token with out registering the user.
-	// mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON)
-	// .content(new Gson().toJson(new JwtAuthenticationRequest("admin",
-	// "admin"))))
-	// .andExpect(status().isUnauthorized());
-	// }
-	//
 	@Test
-	public void oAuthTokenRestPointAuthorizedWithUsernamePassword() throws Exception {
+	public void getAccessTokenUnauthorizedWithoutBody() throws Exception {
+		// Getting access token without providing body.
+		mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void getAccessTokenUnauthorizedWithoutUsernamePassword() throws Exception {
+		// Getting access token without any username, and password.
+		String req = new Gson().toJson(new JwtAuthenticationRequest(null, null));
+		mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON)
+			.content(req))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void getAccessTokenUnauthorizedWithoutRegistering() throws Exception {
+		// Getting access token with out registering the user.
+		mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON)
+			.content(new Gson().toJson(new JwtAuthenticationRequest("admin", "admin"))))
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void getAccessTokenAuthorizedWithUsernamePassword() throws Exception {
 		List<Authority> authList = new ArrayList<Authority>();
 		List<Secret> secretList = new ArrayList<Secret>();
 		String username = RandomStringUtils.randomAlphanumeric(5);
@@ -112,63 +108,82 @@ public class AuthenticationRestControllerTest {
 			.andExpect(jsonPath("userName", is(username)))
 			.andExpect(jsonPath("validity", is(notNullValue())));
 	}
-	//
-	// @Test
-	// public void
-	// oAuthTokenRestPointAuthorizedWithUserDeletedAfterRegistration() throws
-	// Exception {
-	// // Getting access token after the user is deleted gives not authorized.
-	// List<Authority> authList = new ArrayList<Authority>();
-	// List<Secret> secretList = new ArrayList<Secret>();
-	// String username = RandomStringUtils.randomAlphanumeric(5);
-	// String password = RandomStringUtils.randomAlphanumeric(5);
-	// User user = new User(username, password, "ayush", "choukse",
-	// "lucky.choukse@gmail.com", true, new Date(),
-	// authList, secretList);
-	// // save the user.
-	// userServiceImpl.save(user);
-	// // delete the user.
-	// userServiceImpl.delete(userServiceImpl.findByUserName(user.getUsername())
-	// .getId());
-	// // get access token.
-	// mvc.perform(post("/oauth/token").accept(MediaType.APPLICATION_JSON)
-	// .contentType(MediaType.APPLICATION_JSON)
-	// .content(new Gson().toJson(new JwtAuthenticationRequest(username,
-	// password))))
-	// .andExpect(status().isUnauthorized());
-	// }
 
 	@Test
-	public void oAuthRefreshRestPointUnauthorizedWithoutBody() throws Exception {
+	public void getAccessTokenAuthorizedWithUserDeletedAfterRegistration() throws Exception {
+		// Getting access token after the user is deleted gives not authorized.
+		List<Authority> authList = new ArrayList<Authority>();
+		List<Secret> secretList = new ArrayList<Secret>();
+		String username = RandomStringUtils.randomAlphanumeric(5);
+		String password = RandomStringUtils.randomAlphanumeric(5);
+		User user = new User(username, password, RandomStringUtils.randomAlphanumeric(6),
+				RandomStringUtils.randomAlphanumeric(7),
+				RandomStringUtils.randomAlphanumeric(5) + "@" + RandomStringUtils.randomAlphanumeric(4) + ".com", true,
+				new Date(), authList, secretList);
+		// save the user.
+		userServiceImpl.save(user);
+		// delete the user.
+		userServiceImpl.delete(userServiceImpl.findByUserName(user.getUsername())
+			.getId());
+		// get access token.
+		mvc.perform(post("/oauth/token").accept(MediaType.APPLICATION_JSON)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(new Gson().toJson(new JwtAuthenticationRequest(username, password))))
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void getRefreshTokenUnauthorizedWithoutBody() throws Exception {
 		// Getting refresh token without providing body.
 		mvc.perform(get("/oauth/refresh"))
 			.andExpect(status().isBadRequest());
 	}
 
 	@Test
-	public void oAuthRefreshRestPointAuthorizedWithoutToken() throws Exception {
-		// Getting refresh token without providing body.
+	public void getRefreshTokenAuthorizedWithoutToken() throws Exception {
+		// Getting refresh token without providing Token.
 		mvc.perform(get("/oauth/refresh"))
 			.andExpect(status().isBadRequest())
 			.andExpect(content().string("no token provided."));
 	}
 
 	@Test
-	public void oAuthRefreshRestPointAuthorizedWithToken() throws Exception {
-		// Getting refresh token by providing a valid access token already generated.
-		MvcResult mockResult = oAuthTokenRestPointAuthorizedWithUsernamePasswordResult();
+	public void getRefreshTokenAuthorizedWithToken() throws Exception {
+		// Getting refresh token by providing a valid access token already
+		// generated.
+		MvcResult mockResult = getTokenAfterRegisteringUser();
 		MockHttpServletResponse response = mockResult.getResponse();
 		JsonObject jsonObject = (new JsonParser()).parse(response.getContentAsString())
 			.getAsJsonObject();
 		String token = jsonObject.get("token")
 			.getAsString();
-		String username = jsonObject.get("userName").getAsString();
+		String username = jsonObject.get("userName")
+			.getAsString();
 		mvc.perform(get("/oauth/refresh").header("Authorization", token))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 			.andExpect(jsonPath("token", is(notNullValue())))
 			.andExpect(jsonPath("userName", is(username)))
 			.andExpect(jsonPath("validity", is(notNullValue())));
+	}
+
+	@Test
+	public void getRefreshTokenAuthorizedWithTokenAndUserDeleted() throws Exception {
+		// Getting refresh token by providing a valid access token already
+		// generated but the user deleted.
+		MvcResult mockResult = getTokenAfterRegisteringUser();
+		MockHttpServletResponse response = mockResult.getResponse();
+		JsonObject jsonObject = (new JsonParser()).parse(response.getContentAsString())
+			.getAsJsonObject();
+		String token = jsonObject.get("token")
+			.getAsString();
+		String username = jsonObject.get("userName")
+			.getAsString();
+		userServiceImpl.delete(userServiceImpl.findByUserName(username)
+			.getId());
+		mvc.perform(get("/oauth/refresh").header("Authorization", token))
+			.andExpect(status().isNotFound())
+			.andExpect(content().string("user with provided username does not exist"));
 	}
 
 	/*
@@ -180,13 +195,15 @@ public class AuthenticationRestControllerTest {
 	 * userServiceImpl.save(user); return user; }
 	 */
 
-	public MvcResult oAuthTokenRestPointAuthorizedWithUsernamePasswordResult() throws Exception {
+	public MvcResult getTokenAfterRegisteringUser() throws Exception {
 		List<Authority> authList = new ArrayList<Authority>();
 		List<Secret> secretList = new ArrayList<Secret>();
 		String username = RandomStringUtils.randomAlphanumeric(5);
 		String password = RandomStringUtils.randomAlphanumeric(5);
-		User user = new User(username, password, "ayush", "choukse", "lucky.choukse@gmail.com", true, new Date(),
-				authList, secretList);
+		User user = new User(username, password, RandomStringUtils.randomAlphanumeric(6),
+				RandomStringUtils.randomAlphanumeric(7),
+				RandomStringUtils.randomAlphanumeric(5) + "@" + RandomStringUtils.randomAlphanumeric(4) + ".com", true,
+				new Date(), authList, secretList);
 		userServiceImpl.save(user);
 		MvcResult result = mvc.perform(post("/oauth/token").accept(MediaType.APPLICATION_JSON)
 			.contentType(MediaType.APPLICATION_JSON)
@@ -197,6 +214,7 @@ public class AuthenticationRestControllerTest {
 			.andExpect(jsonPath("userName", is(username)))
 			.andExpect(jsonPath("validity", is(notNullValue())))
 			.andReturn();
+
 		return result;
 	}
 
