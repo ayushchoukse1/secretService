@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,16 +48,22 @@ public class AuthenticationRestController {
 
 		String username = authenticationRequest.getUsername();
 		String password = authenticationRequest.getPassword();
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-		if (userDetails == null) {
-			ResponseEntity.ok("user does not exist: " + username);
+		if (username.isEmpty() || password.isEmpty()) {
+			return new ResponseEntity<String>("username or password empty. ", HttpStatus.BAD_REQUEST);
 		}
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+		if (userDetails == null) {
+			return new ResponseEntity<String>("user does not exists: " + username, HttpStatus.NOT_FOUND);
+		}
+
 		logger.info("authenticating user '" + username + "' with the credentials provided.");
 
 		final Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+		SecurityContextHolder.getContext()
+			.setAuthentication(authentication);
 
 		final String token = jwtTokenUtil.generateToken(userDetails, device);
 
@@ -71,13 +78,15 @@ public class AuthenticationRestController {
 	public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
 
 		String token = request.getHeader(tokenHeader);
+		if (token.isEmpty()) {
+			return new ResponseEntity<String>("empty token provided.", HttpStatus.BAD_REQUEST);
+		}
 		String username = jwtTokenUtil.getUsernameFromToken(token);
 
 		JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);
 		if (user == null) {
-			ResponseEntity.ok("user does not exist: " + username);
+			return new ResponseEntity<String>("user with provided username does not exist", HttpStatus.NOT_FOUND);
 		}
-		
 		if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate())) {
 
 			logger.info("creating refresh token for user '" + username + "'.");
@@ -87,7 +96,8 @@ public class AuthenticationRestController {
 					jwtTokenUtil.getExpirationDateFromToken(token)));
 		} else {
 			logger.error("Bad Request.");
-			return ResponseEntity.badRequest().body(null);
+			return ResponseEntity.badRequest()
+				.body(null);
 		}
 	}
 }
