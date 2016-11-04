@@ -1,5 +1,7 @@
 package com.user.secrets.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,7 +14,7 @@ import com.user.secrets.security.JwtUserFactory;
 
 @Service
 public class JwtUserDetailsServiceImpl implements UserDetailsService {
-
+	private final Log logger = LogFactory.getLog(this.getClass());
     @Autowired
     private UserRepository userRepository;
 
@@ -26,6 +28,7 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService {
     	System.out.println("loadUserByUsername user is: "+user.toString());
         
     	if (user == null) {
+    		logger.error("user with username "+ username+ " doesn't exist.");
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         } else {
             return JwtUserFactory.create(user);

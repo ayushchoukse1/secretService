@@ -1,5 +1,7 @@
 package com.user.secrets;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -11,7 +13,9 @@ import com.user.secrets.repository.AuthorityRepository;
 @Component
 public class StartupListener implements ApplicationListener<ContextRefreshedEvent> {
 	AuthorityRepository authorityRepository;
-
+	
+	private final Log logger = LogFactory.getLog(this.getClass());
+	
 	@Autowired
 	public StartupListener(AuthorityRepository repo) {
 		this.authorityRepository = repo;
@@ -19,6 +23,7 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
 
 	@Override
 	public void onApplicationEvent(final ContextRefreshedEvent event) {
+		logger.info("Persisting ROLE_ADMIN, ROLE_USER authorities.");
 		authorityRepository.save(new Authority(1));
 		authorityRepository.save(new Authority(2));
 	}
