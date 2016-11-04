@@ -48,7 +48,7 @@ public class AuthenticationRestController {
 
 		String username = authenticationRequest.getUsername();
 		String password = authenticationRequest.getPassword();
-		if (username.isEmpty() || password.isEmpty()) {
+		if (username == null || password == null) {
 			return new ResponseEntity<String>("username or password empty. ", HttpStatus.BAD_REQUEST);
 		}
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -58,15 +58,11 @@ public class AuthenticationRestController {
 		}
 
 		logger.info("authenticating user '" + username + "' with the credentials provided.");
-
 		final Authentication authentication = authenticationManager
 			.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-
 		SecurityContextHolder.getContext()
 			.setAuthentication(authentication);
-
 		final String token = jwtTokenUtil.generateToken(userDetails, device);
-
 		// Return the token
 		logger.info("creating access token for user '" + username + "'.");
 
@@ -78,8 +74,8 @@ public class AuthenticationRestController {
 	public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
 
 		String token = request.getHeader(tokenHeader);
-		if (token.isEmpty()) {
-			return new ResponseEntity<String>("empty token provided.", HttpStatus.BAD_REQUEST);
+		if (request.getHeader(tokenHeader) == null) {
+			return new ResponseEntity<String>("no token provided.", HttpStatus.BAD_REQUEST);
 		}
 		String username = jwtTokenUtil.getUsernameFromToken(token);
 
@@ -88,9 +84,7 @@ public class AuthenticationRestController {
 			return new ResponseEntity<String>("user with provided username does not exist", HttpStatus.NOT_FOUND);
 		}
 		if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate())) {
-
 			logger.info("creating refresh token for user '" + username + "'.");
-
 			String refreshedToken = jwtTokenUtil.refreshToken(token);
 			return ResponseEntity.ok(new JwtAuthenticationResponse(refreshedToken, username,
 					jwtTokenUtil.getExpirationDateFromToken(token)));
