@@ -3,6 +3,7 @@ package com.user.secrets.controller;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.ws.security.components.crypto.Crypto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -60,6 +61,7 @@ public class SecretController {
 		secret.setUser(userServiceImpl.findByUserName(temp.getUsername()));
 		secret.setCreatedOn(new Date());
 		secret.setUpdatedOn(new Date());
+		//secret.setBody();
 		secretServiceImpl.save(secret);
 		return response.created(secret);
 	}

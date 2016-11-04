@@ -13,11 +13,18 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.jasypt.hibernate4.type.EncryptedStringType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@TypeDef(name = "encryptedString", typeClass = EncryptedStringType.class, parameters = {
+		// value will be used later to register encryptor
+		@Parameter(name = "encryptorRegisteredName", value = "STRING_ENCRYPTOR") })
 @Entity
 public class Secret {
 
@@ -26,13 +33,15 @@ public class Secret {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@Type(type="encryptedString")
 	@Column(name = "TITLE", nullable = false)
 	private String title;
 
+	@Type(type="encryptedString")
 	private String body;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column( nullable = false, updatable = false)
+	@Column(nullable = false, updatable = false)
 	@CreationTimestamp
 	private Date createdOn;
 
@@ -164,5 +173,4 @@ public class Secret {
 				+ updatedOn + ", user=" + user + "]";
 	}
 
-	
 }
