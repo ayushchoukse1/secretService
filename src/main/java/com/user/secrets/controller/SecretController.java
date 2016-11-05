@@ -85,10 +85,18 @@ public class SecretController {
 		JwtUser temp = (JwtUser) SecurityContextHolder.getContext()
 			.getAuthentication()
 			.getPrincipal();
-		secret.setUser(userServiceImpl.findByUserName(temp.getUsername()));
-		secret.setUpdatedOn(new Date());
-		secretServiceImpl.update(secret);
-		return response.ok(secret);
+		Secret secretUpdate = secretServiceImpl.findById(id);
+		//secretUpdate.setUser(userServiceImpl.findByUserName(temp.getUsername()));
+		if (secret.getBody() != null) {
+			secretUpdate.setBody(secret.getBody());
+		}
+		if (secret.getTitle() != null) {
+			secretUpdate.setTitle(secret.getTitle());
+		}
+		secretUpdate.setUpdatedOn(new Date());
+		
+		secretServiceImpl.update(secretUpdate);
+		return response.ok(secretUpdate);
 	}
 
 	public Secret ValidateSecret(Long id) {
