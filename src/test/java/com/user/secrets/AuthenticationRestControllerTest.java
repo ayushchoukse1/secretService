@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +36,7 @@ import com.user.secrets.service.UserServiceImpl;
 @WebAppConfiguration
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class AuthenticationRestControllerTest {
+public class AuthenticationRestControllerTest extends SecretServiceApplicationTests{
 
 	@Autowired
 	WebApplicationContext context;
@@ -76,7 +77,7 @@ public class AuthenticationRestControllerTest {
 	public void getAccessTokenWithoutRegisteration() throws Exception {
 		// Getting access token with out registering the user.
 		mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(new JwtAuthenticationRequest("admin", "admin"))))
+			.content(new Gson().toJson(new JwtAuthenticationRequest(RandomStringUtils.randomAlphanumeric(5), RandomStringUtils.randomAlphanumeric(5)))))
 			.andExpect(status().isNotFound());
 	}
 

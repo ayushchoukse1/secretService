@@ -64,7 +64,8 @@ public class SecretControllerTest {
 		testUtil.setSecretServiceImpl(secretServiceImpl);
 	}
 
-	// @Test
+	/****************** WITHOUT AUTH OPERATIONS *****************/
+	@Test
 	public void getPostPutDeleteSecretWithoutAuthorization() throws Exception {
 		mvc.perform(post("/secret").contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(testUtil.createNewSecret())))
@@ -80,6 +81,7 @@ public class SecretControllerTest {
 			.andExpect(status().isUnauthorized());
 	}
 
+	/************************* CREATE OPERATIONS **************************/
 	@Test
 	public void createSecretWithAuthorization() throws Exception {
 		String token = testUtil.PersistUserAndGetAccessToken(testUtil.createNewUser());
@@ -89,6 +91,7 @@ public class SecretControllerTest {
 			.andExpect(status().isCreated());
 	}
 
+	/************************* UPDATE OPERATIONS **************************/
 	@Test
 	public void updateSecretWithAuthorization() throws Exception {
 		String token = testUtil.PersistUserAndGetAccessToken(testUtil.createNewUser());
@@ -137,6 +140,7 @@ public class SecretControllerTest {
 			.andExpect(status().isForbidden());
 	}
 
+	/************************* DELETE OPERATIONS **************************/
 	@Test
 	public void deleteSecretWithAuthorization() throws Exception {
 		// create and persist new user.
@@ -183,6 +187,7 @@ public class SecretControllerTest {
 			.andExpect(status().isForbidden());
 	}
 
+	/************************* GET OPERATIONS **************************/
 	@Test
 	public void getSecretWithAuthorization() throws Exception {
 		User user = testUtil.createNewUser();

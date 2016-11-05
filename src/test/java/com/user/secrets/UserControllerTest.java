@@ -77,6 +77,7 @@ public class UserControllerTest {
 			.andExpect(status().isUnauthorized());
 	}
 
+	/************************* CREATE OPERATIONS **************************/
 	@Test
 	public void createUser() throws Exception {
 		mvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
@@ -94,6 +95,7 @@ public class UserControllerTest {
 			.andExpect(content().string("user already exists: " + user.getUsername()));
 	}
 
+	/************************* UPDATE OPERATIONS **************************/
 	@Test
 	public void updateUserwithoutAuthorization() throws Exception {
 		// update user without access token.
@@ -157,6 +159,7 @@ public class UserControllerTest {
 			.andExpect(status().isForbidden());
 	}
 
+	/************************* DELETE OPERATIONS **************************/
 	@Test
 	public void deleteUserWithAuthorization() throws Exception {
 		// get user.
@@ -189,6 +192,7 @@ public class UserControllerTest {
 			.andExpect(status().isForbidden());
 	}
 
+	/************************* GET OPERATIONS **************************/
 	@Test
 	public void getUserWithAuthorization() throws Exception {
 		User user = testUtil.createNewUser();

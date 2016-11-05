@@ -17,14 +17,11 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.user.secrets.domain.Secret;
 import com.user.secrets.domain.User;
-import com.user.secrets.repository.SecretRepository;
 import com.user.secrets.security.JwtAuthenticationRequest;
 import com.user.secrets.service.SecretServiceImpl;
 import com.user.secrets.service.UserServiceImpl;
 
 public class TestUtil {
-
-	
 
 	UserServiceImpl userServiceImpl;
 	SecretServiceImpl secretServiceImpl;
@@ -34,7 +31,7 @@ public class TestUtil {
 		this.mvc = mvc;
 		this.userServiceImpl = userServiceImpl;
 	}
-	
+
 	public SecretServiceImpl getSecretServiceImpl() {
 		return secretServiceImpl;
 	}
@@ -43,7 +40,7 @@ public class TestUtil {
 		this.secretServiceImpl = secretServiceImpl;
 	}
 
-	/* ======>User Test Utils<====== */
+	/************************* USER TEST UTILS **************************/
 
 	// create new user object.
 	public User createNewUser() {
@@ -95,7 +92,7 @@ public class TestUtil {
 			.getId();
 	}
 
-	/* ======>Secret Test Utils<====== */
+	/************************* SECRET TEST UTILS **************************/
 
 	// create new user object.
 	public Secret createNewSecret() {
@@ -120,7 +117,7 @@ public class TestUtil {
 	}
 
 	public Secret getSecretfromSecretId(Long secretId) {
-			return secretServiceImpl.findById(secretId);
+		return secretServiceImpl.findById(secretId);
 	}
 
 }
