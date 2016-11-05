@@ -51,17 +51,4 @@ public class BasePermissionEvaluator implements PermissionEvaluator {
 			Object permission) {
 		throw new RuntimeException("Id and Class permissions are not supperted by this application");
 	}
-
-	/*public boolean hasAccess(Authentication authentication, Long id) {
-		System.out.println("has access: " + authentication.getName());
-		JwtUser user = (JwtUser) authentication.getPrincipal();
-		System.out.println(" id =  " + id);
-		String username = secretRepository.findById(id).getUser().getPassword();
-		if (user.getUsername() == username) {
-			return true;
-		} else {
-			return false;
-		}
-	}*/
-
 }

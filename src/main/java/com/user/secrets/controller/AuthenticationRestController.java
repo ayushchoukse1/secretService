@@ -30,7 +30,7 @@ import com.user.secrets.service.JwtUserDetailsServiceImpl;
 public class AuthenticationRestController {
 	private final Log logger = LogFactory.getLog(this.getClass());
 
-	@Value("${jwt.header}") // Authorization
+	@Value("${oauth.header}") // Authorization
 	private String tokenHeader;
 
 	@Autowired
@@ -42,7 +42,7 @@ public class AuthenticationRestController {
 	@Autowired
 	private JwtUserDetailsServiceImpl userDetailsService;
 
-	@RequestMapping(value = "${jwt.route.authentication.path}", method = RequestMethod.POST)
+	@RequestMapping(value = "${oauth.route.authentication.path}", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
 			Device device) throws AuthenticationException {
 
@@ -70,7 +70,7 @@ public class AuthenticationRestController {
 				jwtTokenUtil.getExpirationDateFromToken(token)));
 	}
 
-	@RequestMapping(value = "${jwt.route.authentication.refresh}", method = RequestMethod.GET)
+	@RequestMapping(value = "${oauth.route.authentication.refresh}", method = RequestMethod.GET)
 	public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
 
 		String token = request.getHeader(tokenHeader);
