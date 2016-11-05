@@ -39,7 +39,7 @@ public class UserController {
 		this.entityLinks = entityLinks;
 	}
 
-	@RequestMapping("/")
+	@RequestMapping("${home}")
 	public String home() {
 		return "index";
 	}
@@ -50,7 +50,7 @@ public class UserController {
 	}
 
 	@PreAuthorize("hasAccess(authentication, #id)")
-	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "${home.user.operation}", method = RequestMethod.GET)
 	public ResponseEntity getUser(@PathVariable(value = "id") Long id) {
 		if (userServiceImpl.findById(id) == null) {
 			return response.notFound("user not found: " + id);
@@ -58,7 +58,7 @@ public class UserController {
 		return response.ok(userServiceImpl.findById(id));
 	}
 
-	@RequestMapping(value = "/user", method = RequestMethod.POST)
+	@RequestMapping(value = "${home.user}", method = RequestMethod.POST)
 	public ResponseEntity save(@RequestBody User user) {
 
 		if (userServiceImpl.findByUserName(user.getUsername()) != null)
@@ -82,7 +82,7 @@ public class UserController {
 	}
 
 	@PreAuthorize("hasAccess(authentication, #id)")
-	@RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "${home.user.operation}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> delete(@PathVariable(value = "id") Long id) {
 		if (ValidateUser(id) == null)
 			return response.notFound("user not found: " + id);
@@ -91,7 +91,7 @@ public class UserController {
 	}
 
 	@PreAuthorize("hasAccess(authentication, #id)")
-	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "${home.user.operation}", method = RequestMethod.PUT)
 	public ResponseEntity<User> update(@PathVariable(value = "id") Long id, @RequestBody User user) {
 		if (ValidateUser(id) == null)
 			return response.notFound("user not found: " + id);

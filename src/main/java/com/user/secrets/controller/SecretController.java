@@ -37,23 +37,23 @@ public class SecretController {
 		this.response = response;
 	}
 
-	@RequestMapping(value = "/secrets", method = RequestMethod.GET)
+	@RequestMapping(value = "${home.secrets}", method = RequestMethod.GET)
 	public List<Secret> getSecretList() {
 		User user = userServiceImpl.findByUserName(getCurrentUser().getUsername());
 		return userServiceImpl.findAllSecrets(userServiceImpl.findById(user.getId()));
 	}
 
-	@PreAuthorize("hasPermission(authentication, #secretId)")
-	@RequestMapping(value = "/secret/{secretId}", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Secret> getSecret(@PathVariable(value = "secretId") Long secretId) {
-		if (ValidateSecret(secretId).equals(null)) {
-			return response.notFound("secret not found: " + secretId);
+	@PreAuthorize("hasPermission(authentication, #id)")
+	@RequestMapping(value = "${home.secret.operation}", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Secret> getSecret(@PathVariable(value = "id") Long id) {
+		if (ValidateSecret(id).equals(null)) {
+			return response.notFound("secret not found: " + id);
 		} else {
-			return response.ok(secretServiceImpl.findById(secretId));
+			return response.ok(secretServiceImpl.findById(id));
 		}
 	}
 
-	@RequestMapping(value = "/secret", method = RequestMethod.POST)
+	@RequestMapping(value = "${home.secret}", method = RequestMethod.POST)
 	public ResponseEntity<Secret> saveSecret(@RequestBody Secret secret) {
 		if (secretServiceImpl.findById(secret.getId()) != null)
 			return response.conflict("secret already exist: " + secret.getId());
@@ -68,7 +68,7 @@ public class SecretController {
 	}
 
 	@PreAuthorize("hasPermission(authentication, #id)")
-	@RequestMapping(value = "/secret/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "${home.secret.operation}", method = RequestMethod.DELETE)
 	public ResponseEntity<Secret> deleteSecret(@PathVariable(value = "id") Long id) {
 		if (ValidateSecret(id) == null)
 			return response.notFound("secret not found: " + id);
@@ -78,7 +78,7 @@ public class SecretController {
 	}
 
 	@PreAuthorize("hasPermission(authentication, #id)")
-	@RequestMapping(value = "/secret/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "${home.secret.operation}", method = RequestMethod.PUT)
 	public ResponseEntity<Secret> updateSecret(@PathVariable(value = "id") Long id, @RequestBody Secret secret) {
 		if (ValidateSecret(id) == null)
 			return response.notFound("secret not found: " + id);
@@ -104,18 +104,6 @@ public class SecretController {
 	}
 
 	private JwtUser getCurrentUser() {
-		/*
-		 * System.out.println(SecurityContextHolder.getContext().
-		 * getAuthentication().getPrincipal().getClass()); JwtUser user=
-		 * (JwtUser)SecurityContextHolder.getContext().getAuthentication().
-		 * getPrincipal(); User newUser = new User();
-		 * newUser.setId(user.getId()); newUser.setEmail(user.getEmail());
-		 * newUser.setEnabled(user.isEnabled());
-		 * newUser.setFirstname(user.getFirstname());
-		 * newUser.setLastname(user.getLastname());
-		 * newUser.setLastPasswordResetDate(user.getLastPasswordResetDate());
-		 * newUser.set
-		 */
 		return (JwtUser) SecurityContextHolder.getContext()
 			.getAuthentication()
 			.getPrincipal();
