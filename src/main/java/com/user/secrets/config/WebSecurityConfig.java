@@ -19,7 +19,6 @@ import com.user.secrets.security.JwtAuthenticationTokenFilter;
 import com.user.secrets.security.MethodSecurityConfig;
 import com.user.secrets.service.JwtUserDetailsServiceImpl;
 
-@SuppressWarnings("SpringJavaAutowiringInspection")
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
