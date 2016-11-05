@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.web.FilterChainProxy;
@@ -48,7 +49,7 @@ import com.user.secrets.service.UserServiceImpl;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AuthenticationRestControllerTest {
-	
+
 	@Autowired
 	WebApplicationContext context;
 
@@ -58,7 +59,13 @@ public class AuthenticationRestControllerTest {
 	@Autowired
 	UserServiceImpl userServiceImpl;
 
+	@Bean
+	MockMvc getMvc() {
+		return mvc;
+	}
+
 	private MockMvc mvc;
+	private TestUtil testUtil;
 
 	@Before
 	public void setUp() {
@@ -66,6 +73,7 @@ public class AuthenticationRestControllerTest {
 		mvc = MockMvcBuilders.webAppContextSetup(context)
 			.addFilter(springSecurityFilterChain)
 			.build();
+		testUtil = new TestUtil(getMvc(), userServiceImpl);
 	}
 
 	@Test
@@ -94,43 +102,32 @@ public class AuthenticationRestControllerTest {
 
 	@Test
 	public void getAccessTokenAuthorizedWithUsernamePassword() throws Exception {
-		List<Authority> authList = new ArrayList<Authority>();
-		List<Secret> secretList = new ArrayList<Secret>();
-		String username = RandomStringUtils.randomAlphanumeric(5);
-		String password = RandomStringUtils.randomAlphanumeric(5);
-		User user = new User(username, password, "ayush", "choukse", "lucky.choukse@gmail.com", true, new Date(),
-				authList, secretList);
-		userServiceImpl.save(user);
+		User user = testUtil.createNewUser();
+		testUtil.persistUser(user);
+		// Performing post operation to get access token for the user.
 		mvc.perform(post("/oauth/token").accept(MediaType.APPLICATION_JSON)
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(new JwtAuthenticationRequest(username, password))))
+			.content(new Gson().toJson(new JwtAuthenticationRequest(user.getUsername(), user.getPassword()))))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 			.andExpect(jsonPath("token", is(notNullValue())))
-			.andExpect(jsonPath("userName", is(username)))
+			.andExpect(jsonPath("userName", is(user.getUsername())))
 			.andExpect(jsonPath("validity", is(notNullValue())));
 	}
 
 	@Test
 	public void getAccessTokenAuthorizedWithUserDeletedAfterRegistration() throws Exception {
 		// Getting access token after the user is deleted gives not authorized.
-		List<Authority> authList = new ArrayList<Authority>();
-		List<Secret> secretList = new ArrayList<Secret>();
-		String username = RandomStringUtils.randomAlphanumeric(5);
-		String password = RandomStringUtils.randomAlphanumeric(5);
-		User user = new User(username, password, RandomStringUtils.randomAlphanumeric(6),
-				RandomStringUtils.randomAlphanumeric(7),
-				RandomStringUtils.randomAlphanumeric(5) + "@" + RandomStringUtils.randomAlphanumeric(4) + ".com", true,
-				new Date(), authList, secretList);
+		User user = testUtil.createNewUser();
 		// save the user.
-		userServiceImpl.save(user);
+		testUtil.persistUser(user);
 		// delete the user.
 		userServiceImpl.delete(userServiceImpl.findByUserName(user.getUsername())
 			.getId());
 		// get access token.
 		mvc.perform(post("/oauth/token").accept(MediaType.APPLICATION_JSON)
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(new JwtAuthenticationRequest(username, password))))
+			.content(new Gson().toJson(new JwtAuthenticationRequest(user.getUsername(), user.getPassword()))))
 			.andExpect(status().isNotFound());
 	}
 
@@ -153,14 +150,9 @@ public class AuthenticationRestControllerTest {
 	public void getRefreshTokenAuthorizedWithToken() throws Exception {
 		// Getting refresh token by providing a valid access token already
 		// generated.
-		MvcResult mockResult = getTokenAfterRegisteringUser();
-		MockHttpServletResponse response = mockResult.getResponse();
-		JsonObject jsonObject = (new JsonParser()).parse(response.getContentAsString())
-			.getAsJsonObject();
-		String token = jsonObject.get("token")
-			.getAsString();
-		String username = jsonObject.get("userName")
-			.getAsString();
+		User user = testUtil.createNewUser();
+		String token = testUtil.PersistUserAndGetAccessToken(user);
+		String username = user.getUsername();
 		mvc.perform(get("/oauth/refresh").header("Authorization", token))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -173,50 +165,13 @@ public class AuthenticationRestControllerTest {
 	public void getRefreshTokenAuthorizedWithTokenAndUserDeleted() throws Exception {
 		// Getting refresh token by providing a valid access token already
 		// generated but the user deleted.
-		MvcResult mockResult = getTokenAfterRegisteringUser();
-		MockHttpServletResponse response = mockResult.getResponse();
-		JsonObject jsonObject = (new JsonParser()).parse(response.getContentAsString())
-			.getAsJsonObject();
-		String token = jsonObject.get("token")
-			.getAsString();
-		String username = jsonObject.get("userName")
-			.getAsString();
+		User user = testUtil.createNewUser();
+		String token = testUtil.PersistUserAndGetAccessToken(user);
+		String username = user.getUsername();
 		userServiceImpl.delete(userServiceImpl.findByUserName(username)
 			.getId());
 		mvc.perform(get("/oauth/refresh").header("Authorization", token))
 			.andExpect(status().isNotFound())
 			.andExpect(content().string("user with provided username does not exist"));
 	}
-
-	/*
-	 * public User getUser() { List<Authority> authList=new
-	 * ArrayList<Authority>(); List<Secret> secretList=new ArrayList<Secret>();
-	 * User user = new User(RandomStringUtils.randomAlphanumeric(5),
-	 * RandomStringUtils.randomAlphanumeric(5), "ayush", "choukse",
-	 * "lucky.choukse@gmail.com", true, new Date(), authList,secretList);
-	 * userServiceImpl.save(user); return user; }
-	 */
-
-	public MvcResult getTokenAfterRegisteringUser() throws Exception {
-		List<Authority> authList = new ArrayList<Authority>();
-		List<Secret> secretList = new ArrayList<Secret>();
-		String username = RandomStringUtils.randomAlphanumeric(5);
-		String password = RandomStringUtils.randomAlphanumeric(5);
-		User user = new User(username, password, RandomStringUtils.randomAlphanumeric(6),
-				RandomStringUtils.randomAlphanumeric(7),
-				RandomStringUtils.randomAlphanumeric(5) + "@" + RandomStringUtils.randomAlphanumeric(4) + ".com", true,
-				new Date(), authList, secretList);
-		userServiceImpl.save(user);
-		MvcResult result = mvc.perform(post("/oauth/token").accept(MediaType.APPLICATION_JSON)
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(new JwtAuthenticationRequest(username, password))))
-			.andExpect(status().isOk())
-			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-			.andExpect(jsonPath("token", is(notNullValue())))
-			.andExpect(jsonPath("userName", is(username)))
-			.andExpect(jsonPath("validity", is(notNullValue())))
-			.andReturn();
-		return result;
-	}
-
 }
