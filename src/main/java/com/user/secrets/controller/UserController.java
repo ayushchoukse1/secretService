@@ -57,15 +57,19 @@ public class UserController {
 			return response.notFound("user not found: " + id);
 		}
 		Resource<User> userResource = new Resource<User>(this.userServiceImpl.findById(id));
-		userResource.add(entityLinks.linkFor(User.class).slash(id).withSelfRel());
+		userResource.add(entityLinks.linkFor(User.class)
+			.slash(id)
+			.withSelfRel());
 		return response.ok(userResource);
 
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.POST)
 	public ResponseEntity save(@RequestBody User user) {
+
 		if (userServiceImpl.findByUserName(user.getUsername()) != null)
 			return response.conflict("user already exists: " + user.getUsername());
+
 		List<Authority> authList = new ArrayList<Authority>();
 		authList.add(authority.findById((long) 2));
 		User newUser = new User();
@@ -73,8 +77,8 @@ public class UserController {
 		newUser.setEnabled(true);
 		newUser.setSecrets(new ArrayList<Secret>());
 		newUser.setEmail(user.getEmail());
-		newUser.setFirstname(user.getFirstname());
-		newUser.setLastname(user.getLastname());
+		newUser.setFirstName(user.getFirstName());
+		newUser.setLastName(user.getLastName());
 		newUser.setPassword(user.getPassword());
 		newUser.setLastPasswordResetDate(new Date());
 		newUser.setUsername(user.getUsername());
@@ -83,6 +87,7 @@ public class UserController {
 		return response.created(newUser);
 	}
 
+	@PreAuthorize("hasAccess(authentication, #id)")
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> delete(@PathVariable(value = "id") Long id) {
 		if (ValidateUser(id) == null)

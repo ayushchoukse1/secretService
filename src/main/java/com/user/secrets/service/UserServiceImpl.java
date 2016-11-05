@@ -79,11 +79,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User update(User user) {
 		User userUpdate = userRepository.findOne(user.getId());
-		userUpdate.setFirstname(user.getFirstname());
+		userUpdate.setFirstName(user.getFirstName());
 		userUpdate.setEmail(user.getEmail());
 		userUpdate.setEnabled(user.getEnabled());
 		// userUpdate.setAuthorities(user.getAuthorities());
-		userUpdate.setLastname(user.getLastname());
+		userUpdate.setLastName(user.getLastName());
 		userUpdate.setLastPasswordResetDate(user.getLastPasswordResetDate());
 		userUpdate.setUsername(user.getUsername());
 		return userRepository.save(userUpdate);

@@ -121,19 +121,19 @@ public class User {
 		this.password = password;
 	}
 
-	public String getFirstname() {
+	public String getFirstName() {
 		return firstName;
 	}
 
-	public void setFirstname(String firstname) {
+	public void setFirstName(String firstname) {
 		this.firstName = firstname;
 	}
 
-	public String getLastname() {
+	public String getLastName() {
 		return lastName;
 	}
 
-	public void setLastname(String lastname) {
+	public void setLastName(String lastname) {
 		this.lastName = lastname;
 	}
 

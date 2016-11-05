@@ -47,6 +47,7 @@ import com.user.secrets.service.UserServiceImpl;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AuthenticationRestControllerTest {
+	
 	@Autowired
 	WebApplicationContext context;
 
@@ -214,7 +215,6 @@ public class AuthenticationRestControllerTest {
 			.andExpect(jsonPath("userName", is(username)))
 			.andExpect(jsonPath("validity", is(notNullValue())))
 			.andReturn();
-
 		return result;
 	}
 
