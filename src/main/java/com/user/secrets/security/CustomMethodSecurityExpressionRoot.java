@@ -20,8 +20,9 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 	}
 
 	public boolean hasAccess(Authentication authentication, Long id) {
-		if ((((JwtUser) authentication.getPrincipal()).getId()) == id)
-			{logger.info((((JwtUser) authentication.getPrincipal()).getId())+" has access to resource "+id);
+		if (((JwtUser) authentication.getPrincipal()).getId().equals(id))
+			{
+			logger.info((((JwtUser) authentication.getPrincipal()).getId())+" has access to resource "+id);
 			return true;
 			}
 		else {
