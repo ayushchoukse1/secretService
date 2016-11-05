@@ -61,8 +61,8 @@ public class SecretController {
 			.getAuthentication()
 			.getPrincipal();
 		secret.setUser(userServiceImpl.findByUserName(temp.getUsername()));
-		secret.setCreatedOn(new Date());
-		secret.setUpdatedOn(new Date());
+		secret.setCreatedOn(new Date(System.currentTimeMillis()));
+		secret.setUpdatedOn(new Date(System.currentTimeMillis()));
 		secretServiceImpl.save(secret);
 		return response.created(secret);
 	}
