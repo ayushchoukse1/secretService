@@ -54,14 +54,15 @@ public class SecretController {
 	}
 
 	@RequestMapping(value = "/secret", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Secret> saveSecret(@RequestBody Secret secret) {
+	public ResponseEntity<Secret> saveSecret(@RequestBody Secret secret) {
 		if (secretServiceImpl.findById(secret.getId()) != null)
 			return response.conflict("secret already exist: " + secret.getId());
-		JwtUser temp = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		JwtUser temp = (JwtUser) SecurityContextHolder.getContext()
+			.getAuthentication()
+			.getPrincipal();
 		secret.setUser(userServiceImpl.findByUserName(temp.getUsername()));
 		secret.setCreatedOn(new Date());
 		secret.setUpdatedOn(new Date());
-		//secret.setBody();
 		secretServiceImpl.save(secret);
 		return response.created(secret);
 	}
@@ -81,7 +82,9 @@ public class SecretController {
 	public ResponseEntity<Secret> updateSecret(@PathVariable(value = "id") Long id, @RequestBody Secret secret) {
 		if (ValidateSecret(id) == null)
 			return response.notFound("secret not found: " + id);
-		JwtUser temp = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		JwtUser temp = (JwtUser) SecurityContextHolder.getContext()
+			.getAuthentication()
+			.getPrincipal();
 		secret.setUser(userServiceImpl.findByUserName(temp.getUsername()));
 		secret.setUpdatedOn(new Date());
 		secretServiceImpl.update(secret);
@@ -105,6 +108,8 @@ public class SecretController {
 		 * newUser.setLastPasswordResetDate(user.getLastPasswordResetDate());
 		 * newUser.set
 		 */
-		return (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return (JwtUser) SecurityContextHolder.getContext()
+			.getAuthentication()
+			.getPrincipal();
 	}
 }

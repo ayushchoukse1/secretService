@@ -68,13 +68,10 @@ public class Secret {
 	 * @param user
 	 */
 	@Autowired
-	public Secret(String title, String body, Date createdOn, Date updatedOn, User user) {
+	public Secret(String title, String body) {
 		super();
 		this.title = title;
 		this.body = body;
-		this.createdOn = createdOn;
-		this.updatedOn = updatedOn;
-		this.user = user;
 	}
 
 	/**
