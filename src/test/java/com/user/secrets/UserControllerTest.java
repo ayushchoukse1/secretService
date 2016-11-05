@@ -67,177 +67,155 @@ public class UserControllerTest {
 			.build();
 	}
 
-	// @Test
-	// public void getPutDeleteWithoutAuthorization() throws Exception {
-	// // GET, PUT, DELETE without any authorization.
-	// URI uri = new URI("/user");
-	// URI uri1 = new URI("/user" + (0 + (int) (Math.random() * 1000)));
-	// mvc.perform(get(uri))
-	// .andExpect(status().isUnauthorized());
-	// mvc.perform(put(uri1))
-	// .andExpect(status().isUnauthorized());
-	// mvc.perform(delete(uri1))
-	// .andExpect(status().isUnauthorized());
-	// }
-	//
-	// @Test
-	// public void createUser() throws Exception {
-	// mvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
-	// .content(new Gson().toJson(createNewUser())))
-	// .andExpect(status().isCreated());
-	// }
-	//
-	// @Test
-	// public void createDuplicateUser() throws Exception {
-	// User user = createNewUser();
-	// persistUser(user);
-	// mvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
-	// .content(new Gson().toJson(user)))
-	// .andExpect(status().isConflict())
-	// .andExpect(content().string("user already exists: " +
-	// user.getUsername()));
-	// }
-	//
-	// @Test
-	// public void updateUserwithoutAuthorization() throws Exception {
-	// // update user without access token.
-	// User user = createNewUser();
-	// MvcResult mockResult = persistUser(user);
-	// JsonObject jsonObject = getJsonFromResult(mockResult);
-	//
-	// // update user fields.
-	// user.setFirstName("ayush");
-	// user.setLastName("choukse");
-	// user.setEmail("ayush.choukse@gmail.com");
-	//
-	// mvc.perform(put("/user" + jsonObject.get("id")
-	// .getAsString()).contentType(MediaType.APPLICATION_JSON)
-	// .content(new Gson().toJson(user)))
-	// .andExpect(status().isUnauthorized());
-	// }
-	//
-	// @Test
-	// public void updateUserwithAuthorization() throws Exception {
-	// // update user with access token.
-	// User user = createNewUser();
-	//
-	// // post user.
-	// MvcResult postMockResult = persistUser(user);
-	//
-	// // extract id from postMockResult
-	// JsonObject jsonObject = getJsonFromResult(postMockResult);
-	// String id = jsonObject.get("id")
-	// .getAsString();
-	//
-	// // get access token.
-	// MvcResult tokenMockResult =
-	// mvc.perform(post("/oauth/token").accept(MediaType.APPLICATION_JSON)
-	// .contentType(MediaType.APPLICATION_JSON)
-	// .content(new Gson().toJson(new
-	// JwtAuthenticationRequest(user.getUsername(), user.getPassword()))))
-	// .andReturn();
-	//
-	// // extract token from tokenMockResult.
-	// JsonObject jsonTokenObject = getJsonFromResult(tokenMockResult);
-	//
-	// String accessToken = jsonTokenObject.get("token")
-	// .getAsString();
-	//
-	// // update user.
-	// user.setFirstName("ayush");
-	// user.setLastName("choukse");
-	// user.setEmail("ayush.choukse@gmail.com");
-	//
-	// // perform put operation.
-	// mvc.perform(put("/user/" + jsonObject.get("id")
-	// .getAsString()).contentType(MediaType.APPLICATION_JSON)
-	// .header("Authorization", accessToken)
-	// .content(new Gson().toJson(user)))
-	// .andExpect(status().isOk());
-	// }
-	//
-	// @Test
-	// public void updateAnotherUserwithAuthorization() throws Exception {
-	// // update user with access token.
-	//
-	// User user1 = createNewUser();
-	// User user2 = createNewUser();
-	//
-	// // persist user2.
-	// persistUser(user2);
-	//
-	// // post user1.
-	// persistUser(user1);
-	//
-	// // get access token.
-	// MvcResult tokenMockResult =
-	// mvc.perform(post("/oauth/token").accept(MediaType.APPLICATION_JSON)
-	// .contentType(MediaType.APPLICATION_JSON)
-	// .content(new Gson().toJson(new
-	// JwtAuthenticationRequest(user1.getUsername(), user1.getPassword()))))
-	// .andReturn();
-	//
-	// // extract token from tokenMockResult.
-	// JsonObject jsonTokenObject = getJsonFromResult(tokenMockResult);
-	// String accessToken = jsonTokenObject.get("token")
-	// .getAsString();
-	//
-	// // update user2 fields.
-	// user2.setFirstName("ayush");
-	// user2.setLastName("choukse");
-	// user2.setEmail("ayush.choukse@gmail.com");
-	// Long user2Id = userServiceImpl.findByUserName(user2.getUsername())
-	// .getId();
-	//
-	// // perform update operation on user2 with access token from user1.
-	// mvc.perform(put("/user/" +
-	// user2Id).contentType(MediaType.APPLICATION_JSON)
-	// .header("Authorization", accessToken)
-	// .content(new Gson().toJson(user2)))
-	// .andExpect(status().isForbidden());
-	// }
-	//
-	// @Test
-	// public void deleteUserWithAuthorization() throws Exception {
-	// // get user.
-	// User user = createNewUser();
-	//
-	// // get token string.
-	// String token = PersistUserAndGetAccessToken(user);
-	//
-	// Long userId = userServiceImpl.findByUserName(user.getUsername())
-	// .getId();
-	//
-	// // perform delete operation.
-	// mvc.perform(delete("/user/" + userId).header("Authorization", token))
-	// .andExpect(status().isOk())
-	// .andExpect(content().string("user deleted: " + userId));
-	// }
-	//
-	// @Test
-	// public void deleteAnotherUserWithAuthorization() throws Exception {
-	// User user1 = createNewUser();
-	// String user1Token = PersistUserAndGetAccessToken(user1);
-	// User user2 = createNewUser();
-	// PersistUserAndGetAccessToken(user2);
-	// Long user2Id = userServiceImpl.findByUserName(user2.getUsername())
-	// .getId();
-	// // perform delete operation on user2 with access token from user1.
-	// mvc.perform(delete("/user/" + user2Id).header("Authorization",
-	// user1Token))
-	// .andExpect(status().isForbidden());
-	// }
+	@Test
+	public void getPutDeleteWithoutAuthorization() throws Exception {
+		// GET, PUT, DELETE without any authorization.
+		URI uri = new URI("/user");
+		URI uri1 = new URI("/user" + (0 + (int) (Math.random() * 1000)));
+		mvc.perform(get(uri))
+			.andExpect(status().isUnauthorized());
+		mvc.perform(put(uri1))
+			.andExpect(status().isUnauthorized());
+		mvc.perform(delete(uri1))
+			.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void createUser() throws Exception {
+		mvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
+			.content(new Gson().toJson(createNewUser())))
+			.andExpect(status().isCreated());
+	}
+
+	@Test
+	public void createDuplicateUser() throws Exception {
+		User user = createNewUser();
+		persistUser(user);
+		mvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
+			.content(new Gson().toJson(user)))
+			.andExpect(status().isConflict())
+			.andExpect(content().string("user already exists: " + user.getUsername()));
+	}
+
+	@Test
+	public void updateUserwithoutAuthorization() throws Exception {
+		// update user without access token.
+		User user = createNewUser();
+		MvcResult mockResult = persistUser(user);
+		JsonObject jsonObject = getJsonFromResult(mockResult);
+
+		// update user fields.
+		user.setFirstName("ayush");
+		user.setLastName("choukse");
+		user.setEmail("ayush.choukse@gmail.com");
+
+		mvc.perform(put("/user" + jsonObject.get("id")
+			.getAsString()).contentType(MediaType.APPLICATION_JSON)
+				.content(new Gson().toJson(user)))
+			.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void updateUserwithAuthorization() throws Exception {
+		// update user with access token.
+		User user = createNewUser();
+
+		// post user.
+		MvcResult postMockResult = persistUser(user);
+
+		// extract id from postMockResult
+		JsonObject jsonObject = getJsonFromResult(postMockResult);
+		String id = jsonObject.get("id")
+			.getAsString();
+
+		String accessToken = PersistUserAndGetAccessToken(user);
+
+		// update user.
+		user.setFirstName("ayush");
+		user.setLastName("choukse");
+		user.setEmail("ayush.choukse@gmail.com");
+
+		// perform put operation.
+		mvc.perform(put("/user/" + jsonObject.get("id")
+			.getAsString()).contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", accessToken)
+				.content(new Gson().toJson(user)))
+			.andExpect(status().isOk());
+	}
+
+	@Test
+	public void updateAnotherUserwithAuthorization() throws Exception {
+		// update user with access token.
+
+		User user1 = createNewUser();
+		User user2 = createNewUser();
+
+		// persist user2.
+		persistUser(user2);
+
+		// post user1.
+		persistUser(user1);
+
+		// get access token.
+		String accessToken = PersistUserAndGetAccessToken(user1);
+
+		// update user2 fields.
+		user2.setFirstName("ayush");
+		user2.setLastName("choukse");
+		user2.setEmail("ayush.choukse@gmail.com");
+		Long user2Id = getUserId(user2);
+
+		// perform update operation on user2 with access token from user1.
+		mvc.perform(put("/user/" + user2Id).contentType(MediaType.APPLICATION_JSON)
+			.header("Authorization", accessToken)
+			.content(new Gson().toJson(user2)))
+			.andExpect(status().isForbidden());
+	}
+
+	@Test
+	public void deleteUserWithAuthorization() throws Exception {
+		// get user.
+		User user = createNewUser();
+
+		// get token string.
+		String token = PersistUserAndGetAccessToken(user);
+
+		Long userId = getUserId(user);
+
+		// perform delete operation.
+		mvc.perform(delete("/user/" + userId).header("Authorization", token))
+			.andExpect(status().isOk())
+			.andExpect(content().string("user deleted: " + userId));
+	}
+
+	@Test
+	public void deleteAnotherUserWithAuthorization() throws Exception {
+
+		User user1 = createNewUser();
+		String user1Token = PersistUserAndGetAccessToken(user1);
+
+		User user2 = createNewUser();
+		PersistUserAndGetAccessToken(user2);
+
+		Long user2Id = getUserId(user2);
+
+		// perform delete operation on user2 with access token from user1.
+		mvc.perform(delete("/user/" + user2Id).header("Authorization", user1Token))
+			.andExpect(status().isForbidden());
+	}
 
 	@Test
 	public void getUserWithAuthorization() throws Exception {
 		User user = createNewUser();
 		String token = PersistUserAndGetAccessToken(user);
 		Long userId = getUserId(user);
+
+		// perform get operation for user.
 		mvc.perform(get("/user/" + userId).header("Authorization", token))
 			.andExpect(status().isOk())
-			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 			.andExpect(jsonPath("id", is(notNullValue())))
-			.andExpect(jsonPath("userName", is(user.getUsername())))
+			.andExpect(jsonPath("username", is(user.getUsername())))
 			.andExpect(jsonPath("email", is(user.getEmail())))
 			.andExpect(jsonPath("firstName", is(user.getFirstName())))
 			.andExpect(jsonPath("lastName", is(user.getLastName())))
@@ -245,6 +223,36 @@ public class UserControllerTest {
 			.andExpect(jsonPath("lastPasswordResetDate", is(notNullValue())));
 	}
 
+	@Test
+	public void getAnotherUserWithAuthorization() throws Exception {
+		User user1 = createNewUser();
+
+		User user2 = createNewUser();
+		persistUser(user2);
+
+		Long user2Id = getUserId(user2);
+
+		String user1Token = PersistUserAndGetAccessToken(user1);
+
+		// perform get operation on user2 with access token of user1.
+		mvc.perform(get("/user/" + user2Id).header("Authorization", user1Token))
+			.andExpect(status().isForbidden());
+	}
+
+	@Test
+	public void getUserAfterUserDeletedWithAuthorization() throws Exception {
+		User user = createNewUser();
+		String token = PersistUserAndGetAccessToken(user);
+		Long userId = getUserId(user);
+		userServiceImpl.delete(userId);
+
+		// perform get operation on user with access token after the user is
+		// deleted.
+		mvc.perform(get("/user/" + userId).header("Authorization", token))
+			.andExpect(status().isUnauthorized());
+	}
+
+	// create new user object.
 	public User createNewUser() {
 		String username = RandomStringUtils.randomAlphanumeric(5);
 		String password = RandomStringUtils.randomAlphanumeric(5);
@@ -253,6 +261,8 @@ public class UserControllerTest {
 				null);
 	}
 
+	// perform post operation for the given user and return the result of the
+	// opertion.
 	public MvcResult persistUser(User user) throws Exception {
 		return mvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(user)))
@@ -260,6 +270,7 @@ public class UserControllerTest {
 			.andReturn();
 	}
 
+	// extract and return the JsonObject from the MvcResult.
 	public JsonObject getJsonFromResult(MvcResult result) throws JsonSyntaxException, UnsupportedEncodingException {
 		MockHttpServletResponse response = result.getResponse();
 		JsonObject jsonObject = (new JsonParser()).parse(response.getContentAsString())
@@ -267,6 +278,7 @@ public class UserControllerTest {
 		return jsonObject;
 	}
 
+	// persist user and return the access token generated for that user.
 	public String PersistUserAndGetAccessToken(User user) throws Exception {
 
 		// persist user.
@@ -278,13 +290,13 @@ public class UserControllerTest {
 			.content(new Gson().toJson(new JwtAuthenticationRequest(user.getUsername(), user.getPassword()))))
 			.andReturn();
 		JsonObject tokenObject = getJsonFromResult(tokenMockResult);
-
 		// get token string.
 		String token = tokenObject.get("token")
 			.getAsString();
 		return token;
 	}
 
+	// get userId from user.
 	public Long getUserId(User user) {
 		return userServiceImpl.findByUserName(user.getUsername())
 			.getId();

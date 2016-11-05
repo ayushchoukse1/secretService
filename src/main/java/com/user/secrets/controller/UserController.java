@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -56,12 +55,7 @@ public class UserController {
 		if (userServiceImpl.findById(id) == null) {
 			return response.notFound("user not found: " + id);
 		}
-		Resource<User> userResource = new Resource<User>(this.userServiceImpl.findById(id));
-		userResource.add(entityLinks.linkFor(User.class)
-			.slash(id)
-			.withSelfRel());
-		return response.ok(userResource);
-
+		return response.ok(userServiceImpl.findById(id));
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.POST)
