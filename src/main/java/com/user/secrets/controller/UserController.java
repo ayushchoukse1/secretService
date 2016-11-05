@@ -101,8 +101,22 @@ public class UserController {
 	public ResponseEntity<User> update(@PathVariable(value = "id") Long id, @RequestBody User user) {
 		if (ValidateUser(id) == null)
 			return response.notFound("user not found: " + id);
-		userServiceImpl.save(user);
-		return response.ok(user);
+		User userUpdate = userServiceImpl.findById(id);
+		if (user.getEmail() != null) {
+			userUpdate.setEmail(user.getEmail());
+		}
+		if (user.getFirstName() != null) {
+			userUpdate.setFirstName(user.getFirstName());
+		}
+		if (user.getLastName() != null) {
+			userUpdate.setLastName(user.getLastName());
+		}
+		if (user.getPassword() != null) {
+			userUpdate.setPassword(user.getPassword());
+			userUpdate.setLastPasswordResetDate(new Date());
+		}
+		userServiceImpl.save(userUpdate);
+		return response.ok(userUpdate);
 	}
 
 	public User ValidateUser(Long id) {
