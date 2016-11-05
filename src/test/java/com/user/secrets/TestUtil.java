@@ -17,18 +17,33 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.user.secrets.domain.Secret;
 import com.user.secrets.domain.User;
+import com.user.secrets.repository.SecretRepository;
 import com.user.secrets.security.JwtAuthenticationRequest;
+import com.user.secrets.service.SecretServiceImpl;
 import com.user.secrets.service.UserServiceImpl;
 
 public class TestUtil {
 
+	
+
 	UserServiceImpl userServiceImpl;
+	SecretServiceImpl secretServiceImpl;
 	private MockMvc mvc;
 
 	public TestUtil(MockMvc mvc, UserServiceImpl userServiceImpl) {
 		this.mvc = mvc;
 		this.userServiceImpl = userServiceImpl;
 	}
+	
+	public SecretServiceImpl getSecretServiceImpl() {
+		return secretServiceImpl;
+	}
+
+	public void setSecretServiceImpl(SecretServiceImpl secretServiceImpl) {
+		this.secretServiceImpl = secretServiceImpl;
+	}
+
+	/* ======>User Test Utils<====== */
 
 	// create new user object.
 	public User createNewUser() {
@@ -79,18 +94,33 @@ public class TestUtil {
 		return userServiceImpl.findByUserName(user.getUsername())
 			.getId();
 	}
-	
+
+	/* ======>Secret Test Utils<====== */
+
 	// create new user object.
 	public Secret createNewSecret() {
-		return new Secret("Title"+RandomStringUtils.randomAlphanumeric(5),RandomStringUtils.randomAlphanumeric(100));
+		return new Secret("Title" + RandomStringUtils.randomAlphanumeric(5), RandomStringUtils.randomAlphanumeric(100));
 	}
+
 	// perform post operation for the given user and return the result of the
 	// opertion.
-	public MvcResult persistSecret(Secret secret, String token) throws Exception {
+	public MvcResult persistSecretWithAuthorization(Secret secret, String token) throws Exception {
 		return mvc.perform(post("/secret").contentType(MediaType.APPLICATION_JSON)
 			.header("Authorization", token)
 			.content(new Gson().toJson(secret)))
 			.andExpect(status().isCreated())
 			.andReturn();
 	}
+
+	public Long getSecretId(MvcResult result) throws JsonSyntaxException, UnsupportedEncodingException {
+		JsonObject SecreObject = getJsonFromResult(result);
+		// get token string.
+		return SecreObject.get("id")
+			.getAsLong();
+	}
+
+	public Secret getSecretfromSecretId(Long secretId) {
+			return secretServiceImpl.findById(secretId);
+	}
+
 }
