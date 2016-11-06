@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -23,20 +21,18 @@ import com.user.secrets.response.UserHTTPResponse;
 import com.user.secrets.service.UserServiceImpl;
 
 @Controller
-@ExposesResourceFor(User.class)
+
 public class UserController {
 	UserServiceImpl userServiceImpl;
 	UserHTTPResponse response;
 	AuthorityRepository authority;
-	EntityLinks entityLinks;
 
 	@Autowired
-	public UserController(UserServiceImpl userServiceImpl, UserHTTPResponse response, AuthorityRepository authority,
-			EntityLinks entityLinks) {
+	public UserController(UserServiceImpl userServiceImpl, UserHTTPResponse response, AuthorityRepository authority) {
 		this.userServiceImpl = userServiceImpl;
 		this.response = response;
 		this.authority = authority;
-		this.entityLinks = entityLinks;
+
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
