@@ -11,9 +11,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -32,12 +35,12 @@ import com.google.gson.Gson;
 import com.user.secrets.domain.User;
 import com.user.secrets.security.JwtAuthenticationRequest;
 import com.user.secrets.service.UserServiceImpl;
-
 @WebAppConfiguration
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class AuthenticationRestControllerTest extends SecretServiceApplicationTests{
-
+public class AuthenticationRestControllerTest extends SecretServiceApplicationTests {
+	@Rule
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
 	@Autowired
 	WebApplicationContext context;
 
@@ -60,6 +63,7 @@ public class AuthenticationRestControllerTest extends SecretServiceApplicationTe
 		MockitoAnnotations.initMocks(this);
 		mvc = MockMvcBuilders.webAppContextSetup(context)
 			.addFilter(springSecurityFilterChain)
+			.apply(documentationConfiguration(this.restDocumentation))
 			.build();
 		testUtil = new TestUtil(getMvc(), userServiceImpl);
 	}
@@ -70,14 +74,16 @@ public class AuthenticationRestControllerTest extends SecretServiceApplicationTe
 	public void getAccessTokenWithoutBody() throws Exception {
 		// Getting access token without providing body.
 		mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andDo(document("get-access-token-without-body"));
 	}
 
 	@Test
 	public void getAccessTokenWithoutRegisteration() throws Exception {
 		// Getting access token with out registering the user.
 		mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(new JwtAuthenticationRequest(RandomStringUtils.randomAlphanumeric(5), RandomStringUtils.randomAlphanumeric(5)))))
+			.content(new Gson().toJson(new JwtAuthenticationRequest(RandomStringUtils.randomAlphanumeric(5),
+					RandomStringUtils.randomAlphanumeric(5)))))
 			.andExpect(status().isNotFound());
 	}
 
