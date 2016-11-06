@@ -39,14 +39,9 @@ public class UserController {
 		this.entityLinks = entityLinks;
 	}
 
-	@RequestMapping("${home}")
+	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home() {
-		return "index";
-	}
-
-	@RequestMapping("/login")
-	public String login() {
-		return "login";
+		return "Welcome to secretService Application.";
 	}
 
 	@PreAuthorize("hasAccess(authentication, #id)")
