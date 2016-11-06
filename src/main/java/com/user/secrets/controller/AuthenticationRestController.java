@@ -45,7 +45,9 @@ public class AuthenticationRestController {
 	@RequestMapping(value = "${oauth.route.authentication.path}", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
 			Device device) throws AuthenticationException {
-
+		if (authenticationRequest == null) {
+			return new ResponseEntity<String>("No Body in the request.", HttpStatus.BAD_REQUEST);
+		}
 		String username = authenticationRequest.getUsername();
 		String password = authenticationRequest.getPassword();
 		if (username == null || password == null) {
