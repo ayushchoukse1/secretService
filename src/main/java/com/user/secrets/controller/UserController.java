@@ -36,8 +36,8 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home() {
-		return "Welcome to secretService Application.";
+	public ResponseEntity home() {
+		return response.ok("Welcome to the Secret Service Application.");
 	}
 
 	@PreAuthorize("hasAccess(authentication, #id)")
