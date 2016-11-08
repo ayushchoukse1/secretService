@@ -1,0 +1,131 @@
+'''
+[[resources-token]]
+== AUTHORIZATION TOKEN
+
+// ***********************************************************************
+// *****************Update Another user with Authorization****************
+// ***********************************************************************
+
+[[resources-access-token]]
+=== Get Authorization Token
+
+==== Description
+
+A `POST` request is used to Get a user access token.
+
+==== Request URI
+
+*_/oauth/token_*
+
+==== Request structure
+
+include::{snippets}\get-access-token-with-usernamepassword\request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}\get-access-token-with-usernamepassword\curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}\get-access-token-with-usernamepassword\http-response.adoc[]
+
+include::{snippets}\get-access-token-with-usernamepassword\response-fields.adoc[]
+
+'''
+
+// ***********************************************************************
+// *****************Get Refresh Token***************
+// ***********************************************************************
+
+[[resources-refresh-token]]
+=== Get Refresh Token
+
+==== Description
+
+A `GET` request is used to get a refresh token by passing the access token as authorization .
+
+==== Request URI
+
+*_/oauth/refresh_*
+
+==== Request structure
+
+include::{snippets}\get-refresh-token-with-access-token\request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}\get-refresh-token-with-access-token\curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}\get-refresh-token-with-access-token\http-response.adoc[]
+
+include::{snippets}\get-refresh-token-with-access-token\response-fields.adoc[]
+
+
+'''
+
+[[resources-Miscellaneous-Authorization-Token-Calls]]
+=== Miscellaneous Rest Calls to get Authorization Token
+
+
+// ***********************************************************************
+// *****************Get Access Token Without Registration****************
+// ***********************************************************************
+
+==== Get Access Token Without Registration
+Trying to get access token without registration.
+
+===== Request URI
+
+*_/oauth/token_*
+
+===== Example request
+include::{snippets}\get-access-token-without-registration\curl-request.adoc[]| 
+
+===== Example response
+
+include::{snippets}\get-access-token-without-registration\http-response.adoc[]
+
+
+// ***********************************************************************
+// *************Get Access Token Without Username and Password*************
+// ***********************************************************************
+
+
+====Get Access Token Without Username and Password
+
+Trying to get access token without username and password
+
+===== Request URI
+
+*_/oauth/token_*
+
+===== Example request
+
+include::{snippets}\get-access-token-without-usernamepassword\curl-request.adoc[]
+
+===== Example response 
+
+include::{snippets}\get-access-token-without-usernamepassword\http-response.adoc[]
+
+// ***********************************************************************
+// *****************Get Access Token after user is deleted.***************
+// ***********************************************************************
+
+
+====Get Access Token after user is deleted
+ Trying to get access token after user is deleted.
+ 
+===== Request URI
+
+*_/oauth/token_*
+ 
+===== Example request
+
+include::{snippets}\get-access-token-with-user-deleted-after-registration\curl-request.adoc[]
+
+===== Example response
+
+include::{snippets}\get-access-token-with-user-deleted-after-registration\http-response.adoc[]
+

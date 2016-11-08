@@ -1,0 +1,100 @@
+= Secret Service RESTful API Guide
+Welcome to the API Documentation. ;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[overview]]
+= Overview
+****
+The secret service API can be used by a user to create secrets of his own. Rest calls are made to perform any operation with the API.
+The following are the operations a user can perform:
+
+.Operations
+* Create a user Account.
+	- User authority is provided by default on account creation.
+* Get authorization with the API.
+	- Get access token to make further operations on the resources.
+* Update, and delete the user account details.
+	- Only the user can perform these operations on its account.
+	- Authorization token is needed in order to perform these operations.
+	- No other user can see your account details, update or delete it.
+* Create, update, and delete a secret. 
+	- After getting authorized, a user can create a secret, and perform further operations on a secrete by providing access token in the header.
+	- All the secrets are by default encrypted in database. 
+	- No other user can access, delete or update your secret.
+	- User with Administrator rights also cannot see any secrets created by any other user.
+
+NOTE: A user will be provided access token with time validity, after authorizing with API. Access token must be saved in a secured place.
+The access token provided must be provided in the header fields using "Authorization" header. 
+
+**** 
+
+[[overview-http-verbs]]
+== HTTP verbs
+
+This RESTful API tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
+
+|===
+| Verb | Usage 
+
+| `GET`
+| Used to retrieve a resource
+
+| `POST`
+| Used to create a new resource
+
+| `PUT`
+| Used to update an existing resource, including partial updates
+
+| `DELETE`
+| Used to delete an existing resource
+|===
+
+[[overview-http-status-codes]]
+== HTTP status codes
+
+This RESTful API tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| The request completed successfully
+
+| `201 Created`
+| A new resource has been created successfully. The resource's URI is available from the response's
+`Location` header
+
+| `204 No Content`
+| An update to an existing resource has been applied successfully
+
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing further information
+
+| `404 Not Found`
+| The requested resource did not exist
+
+| `403 Not Found`
+| The requested is Forbidden.
+|===
+
+[[resources]]
+= Resources
+The Secret Service API provides three resources that a user can perform operations on with User Authorities.
+
+.Resource List
+*User
+*Secret
+*Authorization Token
+
+include::user.adoc[]
+
+include::token.adoc[]
+
+include::secret.adoc[]

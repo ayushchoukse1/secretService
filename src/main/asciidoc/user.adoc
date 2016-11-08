@@ -1,0 +1,136 @@
+[[resources-user]]
+== USER
+
+// ***********************************************************************
+// *****************Create a user*****************************************
+// ***********************************************************************
+
+[[resources-insert-user]]
+=== Create a user
+
+==== Description
+
+A `POST` request is used to create a user. The call is made by providing a user details body in the request. The API return the saved user
+with and id. All the user accounts are given user authority by default.
+
+NOTE: This request does not requires any "Authorization" to perform the operation.
+
+==== Request URI
+
+*_/user_*
+
+==== Request structure
+
+include::{snippets}\create-user\request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}\create-user\curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}\create-user\http-response.adoc[]
+
+'''
+
+// ***********************************************************************
+// ****************Get a user with Authorization***************************
+// ***********************************************************************
+
+[[resources-get-user]]
+=== Get a user with Authorization
+
+==== Description
+
+A `GET` request is used to get a user. The user can get his user details by providing the "id" of the user and authorization token 
+in the header.
+
+==== Request URI
+
+*_/user/{id}_*
+
+==== Response structure
+
+include::{snippets}\get-user-with-authorization\response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}\get-user-with-authorization\curl-request.adoc[]
+
+include::{snippets}\delete-user-with-authorization\request-headers.adoc[]
+
+==== Example response
+
+include::{snippets}\get-user-with-authorization\http-response.adoc[]
+
+'''
+
+// ***********************************************************************
+// *****************Update a user with Authorization****************
+// ***********************************************************************
+
+[[resources-update-user]]
+=== Update a user with Authorization
+
+==== Description
+
+A `PUT` request is used to update a user. The user can update his details by providing new user details in the request body and the 
+authorization token in the header.
+
+==== Request URI
+
+*_/user/{id}_*
+
+==== Request structure
+
+include::{snippets}\update-user-with-authorization\request-fields.adoc[]
+
+include::{snippets}\delete-user-with-authorization\request-headers.adoc[]
+
+==== Example request
+
+include::{snippets}\update-user-with-authorization\curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}\update-user-with-authorization\http-response.adoc[]
+
+'''
+
+// ***********************************************************************
+// *****************Delete a user with Authorization****************
+// ***********************************************************************
+
+
+[[resources-delete-user]]
+=== Delete a user with Authorization
+
+==== Description
+
+A `DELETE` request is used to delete a user. The user can delete its account by providing the user "id" in the url and the authorization
+token in the header.
+
+==== Request URI
+
+*_/user/{id}_*
+
+==== Request structure
+
+include::{snippets}\delete-user-with-authorization\request-headers.adoc[]
+
+==== Example request
+
+include::{snippets}\delete-user-with-authorization\curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}\delete-user-with-authorization\http-response.adoc[]
+
+include::{snippets}\delete-user-with-authorization\response-fields.adoc[]
+
+
+// ***********************************************************************
+// *****************miscuser.adoc****************************************
+// ***********************************************************************
+
+include::miscuser.adoc[]

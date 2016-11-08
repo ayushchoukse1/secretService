@@ -1,0 +1,157 @@
+'''
+
+[[resources-Miscellaneous-User-Calls]]
+=== Miscellaneous Rest Calls to User
+
+// ***********************************************************************
+// ***************** Get user without Authorization *********************
+// ***********************************************************************
+
+==== 1. Get user without Authorization
+
+Trying to get a user without providing authorization token in the header will return a HTTP 401 Unauthorized status.
+
+===== Request URI
+
+*_/user/{id}_*
+
+===== Example request
+
+include::{snippets}\get-user-without-authorization\curl-request.adoc[]
+
+===== Example response
+ 
+include::{snippets}\get-user-without-authorization\http-response.adoc[]
+
+
+
+// ***********************************************************************
+// ***************** Update user without Authorization ******************
+// ***********************************************************************
+
+
+
+==== 2. Update user without Authorization
+
+Trying to update user details without providing authorization token in the header will return a HTTP 401 Unauthorized status.
+
+===== Request URI
+
+*_/user/{id}_*
+
+===== Example request
+
+include::{snippets}\update-user-without-authorization\curl-request.adoc[]
+
+===== Example response
+ 
+include::{snippets}\update-user-without-authorization\http-response.adoc[]
+
+
+// ***********************************************************************
+// ***************** Delete user without Authorization ******************
+// ***********************************************************************
+
+
+==== 3. Delete user without Authorization
+
+Trying to delete a user account without providing authorization token in the header will return a HTTP 401 Unauthorized status.
+
+===== Request URI
+
+*_/user/{id}_*
+
+===== Example request
+ 
+include::{snippets}\delete-user-without-authorization\curl-request.adoc[]
+
+===== Example response
+
+include::{snippets}\delete-user-without-authorization\http-response.adoc[]
+
+// ***********************************************************************
+// ***************** Get Another user with Authorization ****************
+// ***********************************************************************
+
+==== 4. Get Another user with Authorization
+
+Trying to get another user account by providing your authorization token in the header will return a HTTP 403 Forbidden status 
+because the user is not authorized to perform the operation on the resource.
+
+
+===== Request URI
+
+*_/user/{id}_*
+
+===== Example request
+
+include::{snippets}\get-another-user-with-authorization\curl-request.adoc[]
+
+===== Example response
+ 
+include::{snippets}\get-another-user-with-authorization\http-response.adoc[]
+
+// ***********************************************************************
+// *****************Get user after deletion with Authorization ***********
+// ***********************************************************************
+
+==== 5. Get user after deletion with Authorization
+
+Trying to get a deleted user account by providing authorization token in the header will return a HTTP 401 Unauthorized status.
+
+===== Request URI
+
+*_/user/{id}_*
+
+===== Example request
+ 
+include::{snippets}\get-user-after-user-deleted-with-authorization\curl-request.adoc[]
+
+===== Example response
+ 
+include::{snippets}\get-user-after-user-deleted-with-authorization\http-response.adoc[]
+
+
+// ***********************************************************************
+// *****************Delete Another user with Authorization****************
+// ***********************************************************************
+
+
+==== 6. Delete Another user with Authorization
+
+Trying to delete another user account by providing your authorization token in the header will return a HTTP 403 Forbidden status 
+because the user is not authorized to perform the operation on the resource.
+
+===== Request URI
+
+*_/user/{id}_*
+
+===== Example request
+
+include::{snippets}\delete-another-user-with-authorization\curl-request.adoc[]
+
+===== Example response
+
+include::{snippets}\delete-another-user-with-authorization\http-response.adoc[]
+
+// ***********************************************************************
+// *****************Update Another user with Authorization****************
+// ***********************************************************************
+
+==== 7. Update Another user with Authorization
+
+Trying to update another user account by providing your authorization token in the header will return a HTTP 403 Forbidden status 
+because the user is not authorized to perform the operation on the resource.
+
+===== Request URI
+
+*_/user/{id}_*
+
+===== Example request
+ 
+include::{snippets}\update-another-user-with-authorization\curl-request.adoc[]
+
+===== Example response
+ 
+include::{snippets}\update-another-user-with-authorization\http-response.adoc[]
+
