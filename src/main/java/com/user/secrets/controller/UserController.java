@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.user.secrets.domain.Authority;
 import com.user.secrets.domain.Secret;
 import com.user.secrets.domain.User;
@@ -35,16 +37,16 @@ public class UserController {
 
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public ResponseEntity home() {
-		return response.ok("Welcome to the Secret Service Application.");
+	@RequestMapping(value = "/")
+	public String home() {
+		return "redirect: /target/generated-docs/auth";
 	}
 
 	@PreAuthorize("hasAccess(authentication, #id)")
 	@RequestMapping(value = "${home.user.operation}", method = RequestMethod.GET)
 	public ResponseEntity getUser(@PathVariable(value = "id") Long id) {
 		if (userServiceImpl.findById(id) == null) {
-			return response.notFound("user not found: " + id);
+			return response.notFound(getString("user not found: " + id));
 		}
 		return response.ok(userServiceImpl.findById(id));
 	}
@@ -76,9 +78,9 @@ public class UserController {
 	@RequestMapping(value = "${home.user.operation}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> delete(@PathVariable(value = "id") Long id) {
 		if (ValidateUser(id) == null)
-			return response.notFound("user not found: " + id);
+			return response.notFound(getString("user not found: " + id));
 		userServiceImpl.delete(id);
-		return response.ok("user deleted: " + id);
+		return response.ok(getString("user deleted: " + id));
 	}
 
 	@PreAuthorize("hasAccess(authentication, #id)")
@@ -106,5 +108,11 @@ public class UserController {
 
 	public User ValidateUser(Long id) {
 		return userServiceImpl.findById(id);
+	}
+
+	public String getString(String object) {
+		JsonObject object1 = new JsonObject();
+		object1.addProperty("message", object);
+		return new Gson().toJson(object1);
 	}
 }

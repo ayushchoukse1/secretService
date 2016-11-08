@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.user.secrets.security.JwtAuthenticationRequest;
 import com.user.secrets.security.JwtTokenUtil;
 import com.user.secrets.security.JwtUser;
@@ -51,12 +53,15 @@ public class AuthenticationRestController {
 		String username = authenticationRequest.getUsername();
 		String password = authenticationRequest.getPassword();
 		if (username == null || password == null) {
-			return new ResponseEntity<String>("username or password empty. ", HttpStatus.BAD_REQUEST);
+			JsonObject object1 = new JsonObject();
+			object1.addProperty("message", "username or password empty. ");
+			return new ResponseEntity<String>(new Gson().toJson(object1), HttpStatus.BAD_REQUEST);
 		}
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
+		JsonObject object1 = new JsonObject();
+		object1.addProperty("message", "user does not exists: " + username);
 		if (userDetails == null) {
-			return new ResponseEntity<String>("user does not exists: " + username, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(new Gson().toJson(object1), HttpStatus.NOT_FOUND);
 		}
 
 		logger.info("authenticating user '" + username + "' with the credentials provided.");

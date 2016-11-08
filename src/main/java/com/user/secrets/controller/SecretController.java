@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.user.secrets.domain.Secret;
 import com.user.secrets.domain.User;
 import com.user.secrets.response.SecretHTTPResponse;
@@ -47,7 +49,7 @@ public class SecretController {
 	@RequestMapping(value = "${home.secret.operation}", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Secret> getSecret(@PathVariable(value = "id") Long id) {
 		if (ValidateSecret(id).equals(null)) {
-			return response.notFound("secret not found: " + id);
+			return response.notFound(getString("secret not found: " + id));
 		} else {
 			return response.ok(secretServiceImpl.findById(id));
 		}
@@ -71,17 +73,17 @@ public class SecretController {
 	@RequestMapping(value = "${home.secret.operation}", method = RequestMethod.DELETE)
 	public ResponseEntity<Secret> deleteSecret(@PathVariable(value = "id") Long id) {
 		if (ValidateSecret(id) == null)
-			return response.notFound("secret not found: " + id);
+			return response.notFound(getString("secret not found: " + id));
 
 		secretServiceImpl.delete(id);
-		return response.ok("user deleted: " + id);
+		return response.ok(getString("user deleted: " + id));
 	}
 
 	@PreAuthorize("hasPermission(authentication, #id)")
 	@RequestMapping(value = "${home.secret.operation}", method = RequestMethod.PUT)
 	public ResponseEntity<Secret> updateSecret(@PathVariable(value = "id") Long id, @RequestBody Secret secret) {
 		if (ValidateSecret(id) == null)
-			return response.notFound("secret not found: " + id);
+			return response.notFound(getString("secret not found: " + id));
 		JwtUser temp = (JwtUser) SecurityContextHolder.getContext()
 			.getAuthentication()
 			.getPrincipal();
@@ -107,5 +109,10 @@ public class SecretController {
 		return (JwtUser) SecurityContextHolder.getContext()
 			.getAuthentication()
 			.getPrincipal();
+	}
+	public String getString(String object) {
+		JsonObject object1 = new JsonObject();
+		object1.addProperty("message", object);
+		return new Gson().toJson(object1);
 	}
 }
