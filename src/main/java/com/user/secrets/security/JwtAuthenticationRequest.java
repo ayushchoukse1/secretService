@@ -25,7 +25,6 @@ public class JwtAuthenticationRequest implements Serializable {
 	}
 
 	public void setUsername(String username) {
-		System.out.println(username);
 		this.username = username;
 	}
 
@@ -35,7 +34,6 @@ public class JwtAuthenticationRequest implements Serializable {
 	}
 
 	public void setPassword(String password) {
-		System.out.println(password);
 		this.password = password;
 	}
 }
