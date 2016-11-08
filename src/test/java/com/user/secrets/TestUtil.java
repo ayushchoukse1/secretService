@@ -1,5 +1,6 @@
 package com.user.secrets;
 
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -8,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -120,4 +122,52 @@ public class TestUtil {
 		return secretServiceImpl.findById(secretId);
 	}
 
+	public FieldDescriptor[] getUserResponseFieldDescriptor() {
+		return new FieldDescriptor[] { fieldWithPath("id").description("User id."),
+				fieldWithPath("username").description("Username"), fieldWithPath("password").description("Password"),
+				fieldWithPath("email").description("Valid Email id"), fieldWithPath("enabled").description("enabled"),
+				fieldWithPath("lastPasswordResetDate").description("lastPasswordResetDate"),
+				fieldWithPath("firstName").description("User's First Name"),
+				fieldWithPath("lastName").description("User's Last Name"),
+				fieldWithPath("secrets").description("Secrets created by User.") };
+	}
+
+	public FieldDescriptor[] getUserRequestFieldDescriptor() {
+		return new FieldDescriptor[] { fieldWithPath("username").description("Username"),
+				fieldWithPath("password").description("Password"), fieldWithPath("email").description("Valid Email id"),
+				fieldWithPath("firstName").description("User's First Name"),
+				fieldWithPath("lastName").description("User's Last Name"),
+
+		};
+	}
+
+	public FieldDescriptor[] getAccessTokenResponseFieldDescriptor() {
+		return new FieldDescriptor[] {
+				fieldWithPath("token").description("The Jwt Access token generated for the user."),
+				fieldWithPath("userName").description("Username for which the token is generated."),
+				fieldWithPath("validity").description("Access token expiry time."),
+
+		};
+	}
+
+	public String getString(String object) {
+		JsonObject object1 = new JsonObject();
+		object1.addProperty("message", object);
+		return new Gson().toJson(object1);
+	}
+
+	public FieldDescriptor[] getSecretRequestFieldDescriptor() {
+
+		return new FieldDescriptor[] { fieldWithPath("title").description("The title of the secret."),
+				fieldWithPath("body").description("Bod yod the secret."), };
+	}
+
+	public FieldDescriptor[] getSecretResponseFieldDescriptor() {
+
+		return new FieldDescriptor[] { fieldWithPath("id").description("Id of the secret created."),
+				fieldWithPath("title").description("The title of the secret."),
+				fieldWithPath("body").description("Bod yod the secret."),
+				fieldWithPath("createdOn").description("Time at which the secret was created."),
+				fieldWithPath("updatedOn").description("Time at which the secret was last updated."), };
+	}
 }
