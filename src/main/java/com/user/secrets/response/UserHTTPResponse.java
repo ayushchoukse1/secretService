@@ -33,5 +33,4 @@ public class UserHTTPResponse implements Response {
 		logger.info(HttpStatus.CREATED+" :"+object);
 		return ResponseEntity.status(HttpStatus.CREATED).body(object);
 	}
-
 }
