@@ -2,17 +2,29 @@ package com.user.secrets;
 
 /*import static org.hamcrest.Matchers.equalTo;
 
+
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;*/
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +36,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -35,6 +50,7 @@ import com.google.gson.Gson;
 import com.user.secrets.domain.User;
 import com.user.secrets.security.JwtAuthenticationRequest;
 import com.user.secrets.service.UserServiceImpl;
+
 @WebAppConfiguration
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -60,6 +76,8 @@ public class AuthenticationRestControllerTest extends SecretServiceApplicationTe
 
 	@Before
 	public void setUp() {
+
+		MockitoAnnotations.initMocks(this);
 		MockitoAnnotations.initMocks(this);
 		mvc = MockMvcBuilders.webAppContextSetup(context)
 			.addFilter(springSecurityFilterChain)
@@ -81,10 +99,17 @@ public class AuthenticationRestControllerTest extends SecretServiceApplicationTe
 	@Test
 	public void getAccessTokenWithoutRegisteration() throws Exception {
 		// Getting access token with out registering the user.
+		String username = RandomStringUtils.randomAlphanumeric(5);
+		FieldDescriptor[] authenticationRequest = new FieldDescriptor[] {};
 		mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(new JwtAuthenticationRequest(RandomStringUtils.randomAlphanumeric(5),
-					RandomStringUtils.randomAlphanumeric(5)))))
-			.andExpect(status().isNotFound());
+			.content(
+					new Gson().toJson(new JwtAuthenticationRequest(username, RandomStringUtils.randomAlphanumeric(5)))))
+			.andExpect(status().isNotFound())
+			// .andExpect(content().string("user does not exists: " + username))
+			.andDo(document("get-access-token-without-registration",
+					requestFields(fieldWithPath("username").description("The user's username for acess token."),
+							fieldWithPath("password").description("The user's password for acess token.")),
+					responseFields(fieldWithPath("message").description("Response from the request."))));
 	}
 
 	@Test
@@ -92,7 +117,9 @@ public class AuthenticationRestControllerTest extends SecretServiceApplicationTe
 		// Getting access token without any username, and password.
 		mvc.perform(post("/oauth/token").contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(new JwtAuthenticationRequest(null, null))))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andDo(document("get-access-token-without-usernamepassword",
+					responseFields(fieldWithPath("message").description("Response from the request."))));
 	}
 
 	@Test
@@ -109,7 +136,11 @@ public class AuthenticationRestControllerTest extends SecretServiceApplicationTe
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 			.andExpect(jsonPath("token", is(notNullValue())))
 			.andExpect(jsonPath("userName", is(user.getUsername())))
-			.andExpect(jsonPath("validity", is(notNullValue())));
+			.andExpect(jsonPath("validity", is(notNullValue())))
+			.andDo(document("get-access-token-with-usernamepassword",
+					requestFields(fieldWithPath("username").description("The user's username for acess token."),
+							fieldWithPath("password").description("The user's password for acess token.")),
+					responseFields(testUtil.getAccessTokenResponseFieldDescriptor())));
 	}
 
 	@Test
@@ -129,7 +160,11 @@ public class AuthenticationRestControllerTest extends SecretServiceApplicationTe
 		mvc.perform(post("/oauth/token").accept(MediaType.APPLICATION_JSON)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(new JwtAuthenticationRequest(user.getUsername(), user.getPassword()))))
-			.andExpect(status().isNotFound());
+			.andExpect(status().isNotFound())
+			.andDo(document("get-access-token-with-user-deleted-after-registration",
+					requestFields(fieldWithPath("username").description("The user's username for acess token."),
+							fieldWithPath("password").description("The user's password for acess token.")),
+					responseFields(fieldWithPath("message").description("Response from the request."))));
 	}
 
 	/****************** GET REFRESH TOKEN OPERATIONS ********************/
@@ -167,7 +202,10 @@ public class AuthenticationRestControllerTest extends SecretServiceApplicationTe
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 			.andExpect(jsonPath("token", is(notNullValue())))
 			.andExpect(jsonPath("userName", is(username)))
-			.andExpect(jsonPath("validity", is(notNullValue())));
+			.andExpect(jsonPath("validity", is(notNullValue())))
+			.andDo(document("get-refresh-token-with-access-token",
+					requestHeaders(headerWithName("Authorization").description("Access token for the request.")),
+					responseFields(testUtil.getAccessTokenResponseFieldDescriptor())));
 	}
 
 	@Test

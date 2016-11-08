@@ -2,6 +2,16 @@ package com.user.secrets;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.net.URI;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -20,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -37,6 +49,8 @@ import com.user.secrets.service.UserServiceImpl;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class UserControllerTest {
+	@Rule
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
 	@Autowired
 	WebApplicationContext context;
 
@@ -57,9 +71,11 @@ public class UserControllerTest {
 
 	@Before
 	public void setUp() {
+
 		MockitoAnnotations.initMocks(this);
 		mvc = MockMvcBuilders.webAppContextSetup(context)
 			.addFilter(springSecurityFilterChain)
+			.apply(documentationConfiguration(this.restDocumentation))
 			.build();
 		testUtil = new TestUtil(getMvc(), userServiceImpl);
 	}
@@ -70,19 +86,29 @@ public class UserControllerTest {
 		URI uri = new URI("/user");
 		URI uri1 = new URI("/user" + (0 + (int) (Math.random() * 1000)));
 		mvc.perform(get(uri))
-			.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized())
+			.andDo(document("get-user-without-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint())));
 		mvc.perform(put(uri1))
-			.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized())
+			.andDo(document("update-user-without-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint())));
 		mvc.perform(delete(uri1))
-			.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized())
+			.andDo(document("delete-user-without-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint())));
 	}
 
 	/************************* CREATE OPERATIONS **************************/
 	@Test
 	public void createUser() throws Exception {
+
 		mvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(testUtil.createNewUser())))
-			.andExpect(status().isCreated());
+			.andExpect(status().isCreated())
+			.andDo(document("create-user", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+					requestFields(testUtil.getUserRequestFieldDescriptor()),
+					responseFields(testUtil.getUserResponseFieldDescriptor())));
 	}
 
 	@Test
@@ -111,7 +137,9 @@ public class UserControllerTest {
 		mvc.perform(put("/user" + jsonObject.get("id")
 			.getAsString()).contentType(MediaType.APPLICATION_JSON)
 				.content(new Gson().toJson(user)))
-			.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized())
+			.andDo(document("update-user-without-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint())));
 	}
 
 	@Test
@@ -130,7 +158,12 @@ public class UserControllerTest {
 		mvc.perform(put("/user/" + userId).contentType(MediaType.APPLICATION_JSON)
 			.header("Authorization", accessToken)
 			.content(new Gson().toJson(user)))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andDo(document("update-user-with-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					requestHeaders(headerWithName("Authorization").description("Access token for the request.")),
+					requestFields(testUtil.getUserRequestFieldDescriptor()),
+					responseFields(testUtil.getUserResponseFieldDescriptor())));
 	}
 
 	@Test
@@ -156,7 +189,10 @@ public class UserControllerTest {
 		mvc.perform(put("/user/" + user2Id).contentType(MediaType.APPLICATION_JSON)
 			.header("Authorization", accessToken)
 			.content(new Gson().toJson(user2)))
-			.andExpect(status().isForbidden());
+			.andExpect(status().isForbidden())
+			.andDo(document("update-another-user-with-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					requestHeaders(headerWithName("Authorization").description(accessToken))));
 	}
 
 	/************************* DELETE OPERATIONS **************************/
@@ -173,7 +209,10 @@ public class UserControllerTest {
 		// perform delete operation.
 		mvc.perform(delete("/user/" + userId).header("Authorization", token))
 			.andExpect(status().isOk())
-			.andExpect(content().string("user deleted: " + userId));
+			.andExpect(content().json(testUtil.getString("user deleted: " + userId)))
+			.andDo(document("delete-user-with-authorization",
+					requestHeaders(headerWithName("Authorization").description("Access token for the request.")),
+					responseFields(fieldWithPath("message").description("Response from the request."))));
 	}
 
 	@Test
@@ -189,7 +228,10 @@ public class UserControllerTest {
 
 		// perform delete operation on user2 with access token from user1.
 		mvc.perform(delete("/user/" + user2Id).header("Authorization", user1Token))
-			.andExpect(status().isForbidden());
+			.andExpect(status().isForbidden())
+			.andDo(document("delete-another-user-with-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					requestHeaders(headerWithName("Authorization").description(user1Token))));
 	}
 
 	/************************* GET OPERATIONS **************************/
@@ -209,7 +251,11 @@ public class UserControllerTest {
 			.andExpect(jsonPath("firstName", is(user.getFirstName())))
 			.andExpect(jsonPath("lastName", is(user.getLastName())))
 			.andExpect(jsonPath("enabled", is(notNullValue())))
-			.andExpect(jsonPath("lastPasswordResetDate", is(notNullValue())));
+			.andExpect(jsonPath("lastPasswordResetDate", is(notNullValue())))
+			.andDo(document("get-user-with-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					requestHeaders(headerWithName("Authorization").description(token)),
+					responseFields(testUtil.getUserResponseFieldDescriptor())));
 	}
 
 	@Test
@@ -225,7 +271,10 @@ public class UserControllerTest {
 
 		// perform get operation on user2 with access token of user1.
 		mvc.perform(get("/user/" + user2Id).header("Authorization", user1Token))
-			.andExpect(status().isForbidden());
+			.andExpect(status().isForbidden())
+			.andDo(document("get-another-user-with-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					requestHeaders(headerWithName("Authorization").description(user1Token))));
 	}
 
 	@Test
@@ -238,6 +287,9 @@ public class UserControllerTest {
 		// perform get operation on user with access token after the user is
 		// deleted.
 		mvc.perform(get("/user/" + userId).header("Authorization", token))
-			.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized())
+			.andDo(document("get-user-after-user-deleted-with-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					requestHeaders(headerWithName("Authorization").description(token))));
 	}
 }

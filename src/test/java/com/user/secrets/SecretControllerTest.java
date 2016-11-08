@@ -1,13 +1,26 @@
 package com.user.secrets;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -15,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -34,6 +48,10 @@ import com.user.secrets.service.UserServiceImpl;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class SecretControllerTest {
+
+	@Rule
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
+
 	@Autowired
 	WebApplicationContext context;
 
@@ -59,6 +77,7 @@ public class SecretControllerTest {
 		MockitoAnnotations.initMocks(this);
 		mvc = MockMvcBuilders.webAppContextSetup(context)
 			.addFilter(springSecurityFilterChain)
+			.apply(documentationConfiguration(this.restDocumentation))
 			.build();
 		testUtil = new TestUtil(getMvc(), userServiceImpl);
 		testUtil.setSecretServiceImpl(secretServiceImpl);
@@ -69,16 +88,21 @@ public class SecretControllerTest {
 	public void getPostPutDeleteSecretWithoutAuthorization() throws Exception {
 		mvc.perform(post("/secret").contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(testUtil.createNewSecret())))
-			.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized())
+			.andDo(document("post-secret-without-authorization"));
 		mvc.perform(get("/secret/"))
-			.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized())
+			.andDo(document("get-secret-without-authorization"));
 		mvc.perform(delete("/secret/"))
-			.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized())
+			.andDo(document("delete-secret-without-authorization"));
 		mvc.perform(get("/secrets"))
-			.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized())
+			.andDo(document("get-secrets-without-authorization"));
 		mvc.perform(put("/secret/").contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(testUtil.createNewSecret())))
-			.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized())
+			.andDo(document("update-secret-without-authorization"));
 	}
 
 	/************************* CREATE OPERATIONS **************************/
@@ -88,7 +112,12 @@ public class SecretControllerTest {
 		mvc.perform(post("/secret").contentType(MediaType.APPLICATION_JSON)
 			.header("Authorization", token)
 			.content(new Gson().toJson(testUtil.createNewSecret())))
-			.andExpect(status().isCreated());
+			.andExpect(status().isCreated())
+			.andDo(document("create-secret-with-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					requestHeaders(headerWithName("Authorization").description("Access token for the request.")),
+					requestFields(testUtil.getSecretRequestFieldDescriptor()),
+					responseFields(testUtil.getSecretResponseFieldDescriptor())));
 	}
 
 	/************************* UPDATE OPERATIONS **************************/
@@ -110,7 +139,12 @@ public class SecretControllerTest {
 			.content(new Gson().toJson(secret)))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-			.andExpect(content().json("{'id':" + secretId + ",'body':" + newBody + ",'title':" + newTitle + "}"));
+			.andExpect(content().json("{'id':" + secretId + ",'body':" + newBody + ",'title':" + newTitle + "}"))
+			.andDo(document("update-secret-with-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					requestHeaders(headerWithName("Authorization").description("Access token for the request.")),
+					requestFields(testUtil.getSecretRequestFieldDescriptor()),
+					responseFields(testUtil.getSecretResponseFieldDescriptor())));;
 	}
 
 	@Test
@@ -137,7 +171,8 @@ public class SecretControllerTest {
 		mvc.perform(put("/secret/" + user1Secret1Id).contentType(MediaType.APPLICATION_JSON)
 			.header("Authorization", user2Token)
 			.content(new Gson().toJson(user1Secret1)))
-			.andExpect(status().isForbidden());
+			.andExpect(status().isForbidden())
+			.andDo(document("update-another-user-secret-with-authorization"));
 	}
 
 	/************************* DELETE OPERATIONS **************************/
@@ -152,7 +187,10 @@ public class SecretControllerTest {
 			.getAsLong();
 		// perform delete operation.
 		mvc.perform(delete("/secret/" + secretId).header("Authorization", token))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andDo(document("delete-secret-with-authorization",
+					requestHeaders(headerWithName("Authorization").description("Access token for the request.")),
+					responseFields(fieldWithPath("message").description("Response from the request."))));
 	}
 
 	@Test
@@ -175,7 +213,8 @@ public class SecretControllerTest {
 		// perform delete operation on user1Secret1 by using access token from
 		// user2.
 		mvc.perform(delete("/secret/" + user1Secret1Id).header("Authorization", user2Token))
-			.andExpect(status().isForbidden());
+			.andExpect(status().isForbidden())
+			.andDo(document("delete-another-user-secret-with-authorization"));
 	}
 
 	@Test
@@ -200,7 +239,12 @@ public class SecretControllerTest {
 
 		mvc.perform(get("/secret/" + secretId).header("Authorization", token))
 			.andExpect(status().isOk())
-			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+			.andDo(document("get-secret-with-authorization", preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					requestHeaders(headerWithName("Authorization").description("Access token for the request.")),
+					responseFields(testUtil.getSecretResponseFieldDescriptor())));
+		;
 	}
 
 }
