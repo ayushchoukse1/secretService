@@ -30,7 +30,7 @@ The secret service API can be used by a user to create secrets of his own. Rest 
 
     *   No other user can see your account details, update or delete it.
 
-*   **Create, update, and delete a secret. **
+*   **Create, update, and delete a secret.**
 
 
     *   After getting authorized, a user can create a secret, and perform further operations on a secrete by providing access token in the header.
