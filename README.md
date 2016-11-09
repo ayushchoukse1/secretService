@@ -41,8 +41,8 @@ The secret service API can be used by a user to create secrets of his own. Rest 
 
     *   User with Administrator rights also cannot see any secrets created by any other user.
     
-    ### **Tables**
-
+    
+### **URI LISTINGS**
 Following are the URI listings on which REST calls are made to the API.
 
 URI     | Description
