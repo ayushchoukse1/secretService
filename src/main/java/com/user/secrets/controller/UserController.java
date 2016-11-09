@@ -41,6 +41,11 @@ public class UserController {
 	public String home() {
 		return "auth";
 	}
+	
+	@RequestMapping(value = "/dyno")
+	public String dynoFile() {
+		return "redirect: wakemydyno.txt";
+	}
 
 	@PreAuthorize("hasAccess(authentication, #id)")
 	@RequestMapping(value = "${home.user.operation}", method = RequestMethod.GET)
