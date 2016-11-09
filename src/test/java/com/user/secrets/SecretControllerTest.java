@@ -79,7 +79,7 @@ public class SecretControllerTest {
 			.addFilter(springSecurityFilterChain)
 			.apply(documentationConfiguration(this.restDocumentation).uris()
 					.withScheme("https")
-					.withHost("${APP_NAME}")
+					.withHost("secretservice.herokuapp.com")
 					.withPort(443))
 			.build();
 		testUtil = new TestUtil(getMvc(), userServiceImpl);
