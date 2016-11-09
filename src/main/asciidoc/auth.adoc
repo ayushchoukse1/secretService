@@ -64,7 +64,6 @@ Following are the URI listings on which REST calls are made to the API.
 | Used to get, update, and delete a secret.
 |===
 
-**** 
 
 [[overview-http-verbs]]
 == HTTP verbs
