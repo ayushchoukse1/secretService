@@ -31,6 +31,39 @@ The following are the operations a user can perform:
 NOTE: A user will be provided access token with time validity, after authorizing with API. Access token must be saved in a secured place.
 The access token provided must be provided in the header fields using "Authorization" header. 
 
+
+**** 
+
+[[overview-URI]]
+== URI Listings
+
+Following are the URI listings on which REST calls are made to the API.
+
+|===
+| URI | Description
+
+| /oauth/token
+| Used to get access token for authorization.
+
+| /oauth/refresh
+| Used to get refresh token after access token expires.
+
+| /user
+| Used to create user using `POST` request.
+
+| /user/{id}
+| Used to get, update, and delete a user.
+
+| /secret
+| Used to create secret using `POST` request.
+
+| /secrets
+| Used to get list of all the secrets using `GET` request.
+
+| /secret/{id}
+| Used to get, update, and delete a secret.
+|===
+
 **** 
 
 [[overview-http-verbs]]
