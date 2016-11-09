@@ -39,7 +39,7 @@ public class UserController {
 
 	@RequestMapping(value = "/")
 	public String home() {
-		return "redirect: /target/generated-docs/auth";
+		return "auth";
 	}
 
 	@PreAuthorize("hasAccess(authentication, #id)")
