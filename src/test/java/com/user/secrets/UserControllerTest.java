@@ -75,7 +75,10 @@ public class UserControllerTest {
 		MockitoAnnotations.initMocks(this);
 		mvc = MockMvcBuilders.webAppContextSetup(context)
 			.addFilter(springSecurityFilterChain)
-			.apply(documentationConfiguration(this.restDocumentation))
+			.apply(documentationConfiguration(this.restDocumentation).uris()
+					.withScheme("https")
+					.withHost("${app.name}")
+					.withPort(443))
 			.build();
 		testUtil = new TestUtil(getMvc(), userServiceImpl);
 	}
