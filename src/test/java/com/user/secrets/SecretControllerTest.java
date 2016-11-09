@@ -79,7 +79,7 @@ public class SecretControllerTest {
 			.addFilter(springSecurityFilterChain)
 			.apply(documentationConfiguration(this.restDocumentation).uris()
 					.withScheme("https")
-					.withHost("${app.name}")
+					.withHost("${APP_NAME}")
 					.withPort(443))
 			.build();
 		testUtil = new TestUtil(getMvc(), userServiceImpl);
